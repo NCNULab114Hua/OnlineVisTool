@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quantum Circuit Viewer</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  
+  html { 
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+  
+  body { 
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; 
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 50%, #0f172a 100%);
+    min-height: 100vh;
+    color: #2d3748;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    background: url("https://media.istockphoto.com/id/1849966331/vector/cpu-chip-on-motherboard-central-computer-processors-cpu-concept-quantum-computer-large-data.jpg?s=1024x1024&w=is&k=20&c=ZeP8kMf0mjzhx2_DkPMg3t9Igq_8U3ECefSKc56Tc8E=");
+    background-position: 0% 49%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    padding: 0px;
+    box-shadow: 5px 5px 10px #000000;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
+    color: #ffffff; /* 白色文字 */
+  }
+
+  .main-content {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .tab-container {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .feature-button {
+    padding: 16px 32px;
+    margin: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 0;
+  }
+
+  .feature-button:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .feature-button.active {
+    color: white;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .feature-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: white;
+  }
+
+  .content-area {
+    padding: 30px;
+  }
+
+  .section {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .section-title {
+    font-size: 35px;;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 14px;
+  }
+
+  select, input[type="number"], input[type="range"], input[type="file"] {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+  }
+
+  select:focus, input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    resize: vertical;
+    transition: all 0.2s ease;
+    background: white;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  }
+
+  .btn-secondary:hover {
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .btn-success:hover {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  #canvasContainer {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 2px solid #e2e8f0;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  canvas {
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+  }
+
+  .canvas-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .control-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .gate-palette {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+  }
+
+  .draggable-gate {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 46px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    user-select: none;
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .draggable-gate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .draggable-gate:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+  }
+
+  .gate-wire { 
+    background: white;
+    color: black;
+    border: 2px solid black;
+  }
+  
+  .gate-H { 
+    background: #f87171; /* 紅色 */
+    color: black;
+  }
+  
+  .gate-T { 
+    background: #818cf8; /* 藍色 */
+    color: black;
+  }
+  
+  .gate-Td { 
+    background: #22d3ee; /* 青色 */
+    color: black; 
+  }
+  
+  .gate-X { 
+    background: white;
+    color: black;
+    border: 2px solid black;
+  }
+  
+  .gate-C { 
+    background: white;
+    color: black;
+    border: 2px solid black;
+  }
+
+  .matrix-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    border: none;
+    background: transparent;
+  }
+
+  .matrix {
+    border-collapse: collapse;
+    margin: 0;
+    background: white;
+  }
+
+  .matrix td {
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    vertical-align: middle;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    min-width: 120px;
+    background: white;
+  }
+
+  .matrix td:hover {
+    background: #f8fafc;
+  }
+
+  .fitness-display {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #0ea5e9;
+    margin-top: 15px;
+  }
+
+  .fitness-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0c4a6e;
+  }
+
+  .tooltip-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .tooltip-button {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tooltip-button:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    transform: translateY(-1px);
+  }
+
+  .tooltip-box {
+    visibility: hidden;
+    width: 450px;
+    background: #1f2937;
+    color: #f9fafb;
+    text-align: left;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    position: absolute;
+    z-index: 1000;
+    top: 35px;
+    left: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+  }
+
+  .tooltip-container:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .slider-container {
+    margin-top: 15px;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .gen-label {
+    font-weight: 600;
+    color: #4f46e5;
+    min-width: 60px;
+    text-align: center;
+    background: #f0f9ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 2px solid #0ea5e9;
+  }
+
+  #fitnessChart {
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    min-height: 400px;
+    width: 100%;
+  }
+
+  #fitnessChartContainer {
+    min-height: 450px;
+  }
+
+  .file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .file-input-wrapper:hover {
+    border-color: #4f46e5;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  }
+
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+    
+    .content-area {
+      padding: 20px;
+    }
+    
+    .section {
+      padding: 20px;
+    }
+    
+    .controls-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .control-group {
+      justify-content: space-between;
+    }
+    
+    #canvasContainer {
+      flex-direction: column;
+    }
+    
+    .gate-palette {
+      justify-content: center;
+    }
+  }
+
+  .section {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .success-flash {
+    animation: successPulse 0.6s ease-out;
+  }
+
+  @keyframes successPulse {
+    0% { background-color: #dcfce7; }
+    100% { background-color: transparent; }
+  }
+
+  .stats-box {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 21px;         /* ✅ 調大字體 */
+    font-weight: bold;       /* ✅ 加粗 */
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<script id="MathJax-script" defer
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+</script>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>QSynViz: Quantum Circuit Synthesis Visualizer</h1>
+  </div>
+
+  <div class="main-content">
+    <div class="tab-container">
+      <div class="feature-button active" data-tab="function">Function Viewer</div>
+      <div class="feature-button" data-tab="editor">Circuit Editor</div>
+      <div class="feature-button" data-tab="analyzer">Dynamic Analysis</div>
+    </div>
+
+    <div class="content-area">
+      <div class="section">
+        <div class="section-title">🎯 Target Function</div>
+        <div class="controls-row">
+          <div class="control-group">
+            <label for="FunctionName">Target Function:</label>
+            <select id="FunctionName">
+              <option value="sqrt(SWAP)">sqrt(SWAP)</option>
+              <option value="ctrlS">ctrl-S</option>
+              <option value="HHL">HHL</option>
+              <option value="HHL_global_phase">HHL_global phase(-1)</option>
+              <option value="Toffoli">Toffoli</option>
+              <option value="Peres">Peres</option>
+              <option value="TOFPN">TOF-PN</option>
+              <option value="OR">OR</option>
+              <option value="Fredkin">Fredkin</option>
+              <option value="Permutation">Permutation</option>
+              <option value="Grover3">Grover3</option>
+              <option value="Grover3_global_phase">Grover3_global_phase</option>
+              <option value="HHL_50Time">HHL 50 Time Experimental Results</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="circuitDepth">Circuit Depth:</label>
+            <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 80px;">
+            <button onclick="setCircuitDepth()" class="btn-success">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="input_file" class="section" style="display: none;">
+        <div class="section-title">
+          📁 Data Import
+          <div class="tooltip-container">
+            <button class="tooltip-button">Help</button>
+            <div class="tooltip-box">
+<b>Supported format:</b> (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
+<b>Format for each generation:</b>
+- The first line is the generation number (gen)
+- The second line contains:
+• Each qubit enclosed in [ ... ]
+• Followed by the fitness value
+
+✔️ You can input multiple generations.
+✔️ Repeat the same format block for each generation.
+
+<b>Example:</b>
+1
+[5 1 5 2 5 1 5] [4 2 4 3 4 0 4] 0.000000...
+2
+[5 1 5 2 5 1 5] [4 0 4 3 4 0 4] 0.076120...
+3
+[5 1 5 2 5 1 5] [4 0 4 0 4 0 4] 0.146446...
+
+<b>Keyboard shortcuts:</b>
+<b>A</b>: last gen, <b>D</b>: next gen, <b>W</b>: last change, <b>S</b>: next change
+            </div>
+          </div>
+          <div class="tooltip-container">
+            <button class="tooltip-button">Example</button>
+            <div class="tooltip-box" style="padding: 5px; width: 800px;">
+              <img src="2bit_swap_example.png" alt="Example" style="max-width: 1000px; width: 100%; border-radius: 8px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="file-input-wrapper">
+          <input type="file" id="fileInput">
+          <div>📂 Click to select file or drag & drop</div>
+        </div>
+
+        <div class="controls-row" style="margin-top: 15px;">
+          <div class="control-group">
+            <label for="genInput">Jump to Iteration:</label>
+            <input type="number" id="genInput" min="1" style="width: 100px;">
+            <button onclick="jumpToGeneration()" class="btn-secondary">Go</button>
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <label>Iteration Control:</label>
+          <div class="slider-row">
+            <span>Iter:</span>
+            <input type="range" id="genSlider" min="1" max="10000" value="1">
+            <span id="genLabel" class="gen-label">1</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="input_circuit_n" class="section" style="display: none;">
+        <div class="section-title">
+          ⌨️ Manual Circuit Input
+          <div class="tooltip-container">
+            <button class="tooltip-button">Help</button>
+            <div class="tooltip-box">
+<b>Supported formats:</b> (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
+<b>Format A:</b> One row per qubit, gates separated by spaces.
+<b>Example:</b>
+5 1 5 2 5 1 5
+4 2 4 3 4 0 4
+
+<b>Format B:</b> Each qubit enclosed in [ ... ].
+<b>Example:</b>
+[5 1 5 2 5 1 5] [4 2 4 3 4 0 4]
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; align-items: flex-start;">
+          <!-- placeholder="Paste circuit gate encoding in Format A or B..." -->
+          <textarea id="manualCircuitInput" rows="6" cols="55" ></textarea>
+          <button onclick="applyManualCircuit()" class="btn-success">Apply Circuit</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          🔧 Circuit Diagram
+          <div class="tooltip-container">
+            <button class="tooltip-button">Help</button>
+            <div class="tooltip-box">
+<b>How to modify circuit:</b>
+<b>Drag gate:</b> Move gate to other position
+<b>Mouse wheel:</b> Change gate type
+<b>Double click:</b> Remove gate
+<b>< > buttons:</b> Push circuit left/right by one step
+<b><< >> buttons:</b> Compress circuit left/right
+<b>Clear button:</b> Remove all gates
+<b>Copy button:</b> Copy circuit to clipboard
+            </div>
+          </div>
+
+          <button onclick="downloadCanvas()" class="btn-secondary btn-small">📷 Download Circuit</button>
+        </div>
+
+        <div class="gate-palette">
+          <div class="draggable-gate gate-wire" draggable="true" data-gate="0">——</div>
+          <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
+          <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
+          <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
+          <div class="draggable-gate gate-X" draggable="true" data-gate="4">⊕</div>
+          <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
+        </div>
+
+        <div id="canvasContainer" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+          <!-- 上半部：Canvas + 控制按鈕 -->
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <!-- 電路圖 -->
+            <canvas id="circuitCanvas"></canvas>
+
+            <!-- 控制按鈕 -->
+            <div class="canvas-controls">
+              <div class="control-row">
+                <button onclick="push_left1()" class="btn-secondary btn-small" style="width: 60px;"><</button>
+                <button onclick="push_right1()" class="btn-secondary btn-small" style="width: 60px;">></button>
+              </div>
+              <div class="control-row">
+                <button onclick="push_left()" class="btn-secondary btn-small" style="width: 60px;"><<</button>
+                <button onclick="push_right()" class="btn-secondary btn-small" style="width: 60px;">>></button>
+              </div>
+              <div class="control-row">
+                <button onclick="clear_circuit()" class="btn-secondary btn-small" style="width: 60px;">Clear</button>
+                <button onclick="copy_circuit()" class="btn-success btn-small" style="width: 60px;">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✨ 統計資訊在下方 -->
+          <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="stats-box">GC (Gate Count): <span id="statGC">0</span></div>
+            <div class="stats-box">GD (Gate Depth): <span id="statGD">0</span></div>
+            <div class="stats-box">TC (T Count): <span id="statTC">0</span></div>
+            <div class="stats-box">TD (T Depth): <span id="statTD">0</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="HS_fitness" class="section" style="display: none;">
+        <div class="section-title">📊 Circuit Fitness</div>
+        <div class="fitness-display">
+          <!-- Hilbert-Schmidt Distance -->
+          <div style="font-size: 20px; color: #64748b; margin-bottom: 8px;">
+            Hilbert-Schmidt Distance: \( 1 - \langle U, V \rangle_{\mathrm{HS}} \)
+          </div>
+          <div class="fitness-value">
+            <span id="fitnessValueShort" title="Full precision value">0.000000</span>
+          </div>
+          <!-- Diamond Norm -->
+          <div style="font-size: 20px; color: #64748b; margin-top: 16px; margin-bottom: 8px;">
+            Approximate Diamond Norm: \( 2 \sqrt{1 - \frac{|\mathrm{Tr}(U^\dagger V)|^2}{d^2}} \)
+          </div>
+          <div class="fitness-value">
+            <span id="diamondNormValue" title="Diamond norm value">0.00000000000000000000000000000000000000000000000000000</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="matrix_show" class="section">
+        <div class="section-title">
+          🔢 Unitary Matrix
+          <button onclick="captureMatrix()" class="btn-secondary btn-small">📷 Download Matrix</button>
+        </div>
+        <div class="matrix-container">
+          <table id="matrix" class="matrix"></table>
+        </div>
+      </div>
+
+      <div id="fitnessChartContainer" class="section" style="display: none;">
+        <div class="section-title">📈 Fitness Evolution</div>
+        <div id="fitnessChart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let M = document.getElementById("circuitDepth").value;
+  let N = 2;
+
+  M = parseInt(M);
+  const canvas = document.getElementById("circuitCanvas");
+  const leftPadding = 50;
+  const rightPadding = 50;
+  const topPadding = 20;
+  const bottomPadding = 20;
+  const gateWidth = 50;
+  const qubitSpacing = 50;
+
+  let gates = [ "─","H","t","T","⊕","●" ];
+  let gates_arrays = {};
+
+  canvas.width = leftPadding + M * gateWidth + rightPadding;
+  canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
+
+  let mouseDownPos = null;
+  let mouseUpPos = null;
+
+  let TargetArrat = [
+      [1, 0, 0, 0],
+      [0, math.complex(0.5, 0.5), math.complex(0.5, -0.5), 0],
+      [0, math.complex(0.5, -0.5), math.complex(0.5, 0.5), 0],
+      [0, 0, 0, 1],
+  ];
+
+  class DeferredCpx {
+    constructor(val = math.complex(0, 0), hasSqrt2 = false) {
+      this.real = math.complex(0, 0);
+      this.real_sqrt2 = math.complex(0, 0);
+      this.imag = math.complex(0, 0);
+      this.imag_sqrt2 = math.complex(0, 0);
+
+      if (hasSqrt2) {
+        this.real_sqrt2 = math.complex(val.re, 0);
+        this.imag_sqrt2 = math.complex(val.im, 0);
+      } else {
+        this.real = math.complex(val.re, 0);
+        this.imag = math.complex(val.im, 0);
+      }
+    }
+
+    add(other) {
+      const r = new DeferredCpx();
+      r.real = math.add(this.real, other.real);
+      r.real_sqrt2 = math.add(this.real_sqrt2, other.real_sqrt2);
+      r.imag = math.add(this.imag, other.imag);
+      r.imag_sqrt2 = math.add(this.imag_sqrt2, other.imag_sqrt2);
+      return r;
+    }
+
+    addInPlace(other) {
+      this.real = math.add(this.real, other.real);
+      this.real_sqrt2 = math.add(this.real_sqrt2, other.real_sqrt2);
+      this.imag = math.add(this.imag, other.imag);
+      this.imag_sqrt2 = math.add(this.imag_sqrt2, other.imag_sqrt2);
+      return this;
+    }
+
+    multiply(other) {
+      const r = new DeferredCpx();
+      const half = 0.5;
+
+      r.real = math.add(r.real, math.multiply(this.real, other.real));
+      r.real_sqrt2 = math.add(r.real_sqrt2, math.multiply(this.real, other.real_sqrt2));
+      r.real_sqrt2 = math.add(r.real_sqrt2, math.multiply(this.real_sqrt2, other.real));
+      r.real = math.add(r.real, math.multiply(this.real_sqrt2, other.real_sqrt2).mul(half));
+
+      r.imag = math.add(r.imag, math.multiply(this.real, other.imag));
+      r.imag_sqrt2 = math.add(r.imag_sqrt2, math.multiply(this.real, other.imag_sqrt2));
+      r.imag_sqrt2 = math.add(r.imag_sqrt2, math.multiply(this.real_sqrt2, other.imag));
+      r.imag = math.add(r.imag, math.multiply(this.real_sqrt2, other.imag_sqrt2).mul(half));
+
+      r.imag = math.add(r.imag, math.multiply(this.imag, other.real));
+      r.imag_sqrt2 = math.add(r.imag_sqrt2, math.multiply(this.imag, other.real_sqrt2));
+      r.imag_sqrt2 = math.add(r.imag_sqrt2, math.multiply(this.imag_sqrt2, other.real));
+      r.imag = math.add(r.imag, math.multiply(this.imag_sqrt2, other.real_sqrt2).mul(half));
+
+      r.real = math.subtract(r.real, math.multiply(this.imag, other.imag));
+      r.real_sqrt2 = math.subtract(r.real_sqrt2, math.multiply(this.imag, other.imag_sqrt2));
+      r.real_sqrt2 = math.subtract(r.real_sqrt2, math.multiply(this.imag_sqrt2, other.imag));
+      r.real = math.subtract(r.real, math.multiply(this.imag_sqrt2, other.imag_sqrt2).mul(half));
+
+      return r;
+    }
+
+    evaluate() {
+      const sqrt2 = Math.SQRT2;
+      return math.add(
+        math.add(this.real, math.divide(this.real_sqrt2, sqrt2)),
+        math.multiply(math.complex(0, 1),
+          math.add(this.imag, math.divide(this.imag_sqrt2, sqrt2))
+        )
+      );
+    }
+  }
+      
+  function setCircuitDepth(){
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    const m_ = document.getElementById("circuitDepth").value;
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    if (m_ > d0.circuit[0].length)
+    {
+      for (let i = d0.circuit[0].length; i < m_; i++)
+      {
+        for (let j = 0; j < d0.circuit.length; j++)
+        {
+          d0.circuit[j].push(0);
+        }
+      }
+    }
+
+    const canvas = document.getElementById("circuitCanvas");
+    const newWidth = leftPadding + m_ * gateWidth + rightPadding;
+    canvas.width = newWidth;
+
+    renderCircuit(0);
+    updateFitness(d0);
+  }
+
+  function clear_circuit()
+  {
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    for (let i = 0; i < d0.circuit.length; i++)
+    {
+      for (let j = 0; j < d0.circuit[i].length; j++)
+      {
+        d0.circuit[i][j] = 0;
+      }
+    }
+    renderCircuit(0);
+    updateFitness(d0);
+    d0_gen = gen;
+  }
+
+  function push_left1()
+  {
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    
+    let done_ =0;
+    for (let j = 0; j < d0.circuit[0].length; j++)
+    {
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if (d0.circuit[i][j] === 0)
+        {
+          for (let k = j; k < d0.circuit[i].length; k++)
+          {
+            if (d0.circuit[i][k] !== 0 && k !== j)
+            {
+              if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+              {
+                d0.circuit[i][j] = d0.circuit[i][k];
+                d0.circuit[i][k] = 0;
+                done_ += 1;
+                break;
+              }
+              else
+              {
+                let ctrl_not = -1
+                for (let l = 0; l < d0.circuit.length; l++)
+                {
+                  if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                  {
+                    ctrl_not = l;
+                    break;
+                  }
+                  }
+                let can_push = 1;
+                for (let l = j; l < k; l++)
+                {
+                  if (d0.circuit[ctrl_not][l] !== 0)
+                  {
+                    can_push = 0;
+                    break;
+                  }
+                }
+                if (can_push === 1)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                  d0.circuit[ctrl_not][k] = 0;
+                  done_ += 1;
+                  break;
+                }
+                else
+                {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      if (done_ > 0)
+      {
+       break; 
+      }
+    }
+    
+    renderCircuit(0);
+    updateFitness(d0);
+    d0_gen = gen;
+  }
+
+  function push_right1()
+  {
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    
+    let done_ = 0;
+    for (let j = d0.circuit[0].length - 1; j > -1; j--)
+    {
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if (d0.circuit[i][j] === 0)
+        {
+          for (let k = j; k > -1; k--)
+          {
+            if (d0.circuit[i][k] !== 0 && k !== j)
+            {
+              if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+              {
+                d0.circuit[i][j] = d0.circuit[i][k];
+                d0.circuit[i][k] = 0;
+                done_ += 1;
+                break;
+              }
+              else
+              {
+                let ctrl_not = -1
+                for (let l = 0; l < d0.circuit.length; l++)
+                {
+                  if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                  {
+                    ctrl_not = l;
+                    break;
+                  }
+                }
+                let can_push = 1;
+                for (let l = j; l > k; l--)
+                {
+                  if (d0.circuit[ctrl_not][l] !== 0)
+                  {
+                    can_push = 0;
+                    break;
+                  }
+                }
+                if (can_push === 1)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                  d0.circuit[ctrl_not][k] = 0;
+                  done_ += 1;
+                  break;
+                }
+                else
+                {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      if (done_ > 0)
+      {
+        break;
+      }
+    }
+    
+    renderCircuit(0);
+    updateFitness(d0);
+    d0_gen = gen;
+  }
+
+  function push_left()
+  {
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    
+    for (let j = 0; j < d0.circuit[0].length; j++)
+    {
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if (d0.circuit[i][j] === 0)
+        {
+          for (let k = j; k < d0.circuit[i].length; k++)
+          {
+            if (d0.circuit[i][k] !== 0 && k !== j)
+            {
+              if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+              {
+                d0.circuit[i][j] = d0.circuit[i][k];
+                d0.circuit[i][k] = 0;
+                break;
+              }
+              else
+              {
+                let ctrl_not = -1
+                for (let l = 0; l < d0.circuit.length; l++)
+                {
+                  if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                  {
+                    ctrl_not = l;
+                    break;
+                  }
+                }
+                let can_push = 1;
+                for (let l = j; l < k; l++)
+                {
+                  if (d0.circuit[ctrl_not][l] !== 0)
+                  {
+                    can_push = 0;
+                    break;
+                  }
+                }
+                if (can_push === 1)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                  d0.circuit[ctrl_not][k] = 0;
+                  break;
+                }
+                else
+                {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    renderCircuit(0);
+    updateFitness(d0);
+    d0_gen = gen;
+  }
+
+  function push_right()
+  {
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+    
+    for (let j = d0.circuit[0].length - 1; j > -1; j--)
+    {
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if (d0.circuit[i][j] === 0)
+        {
+          for (let k = j; k > -1; k--)
+          {
+            if (d0.circuit[i][k] !== 0 && k !== j)
+            {
+              if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+              {
+                d0.circuit[i][j] = d0.circuit[i][k];
+                d0.circuit[i][k] = 0;
+                break;
+              }
+              else
+              {
+                let ctrl_not = -1
+                for (let l = 0; l < d0.circuit.length; l++)
+                {
+                  if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                  {
+                    ctrl_not = l;
+                    break;
+                  }
+                }
+                let can_push = 1;
+                for (let l = j; l > k; l--)
+                {
+                  if (d0.circuit[ctrl_not][l] !== 0)
+                  {
+                    can_push = 0;
+                    break;
+                  }
+                }
+                if (can_push === 1)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                  d0.circuit[ctrl_not][k] = 0;
+                  break;
+                }
+                else
+                {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    renderCircuit(0);
+    updateFitness(d0);
+    d0_gen = gen;
+  }
+  
+  function setCnotArray() {
+      let I = [[1,0],
+               [0,1]]
+      let X = [[0,1],
+               [1,0]];
+      let P0 = [[1,0],
+                [0,0]];
+      let P1 = [[0,0],
+                [0,1]];
+      let I_array = I;
+      for (let n = 1; n < N; n++) {
+          I_array = math.kron(I_array, I);
+      }
+      gates_arrays["I"] = I_array;
+
+      for (let ctrl_ = 0; ctrl_ < N; ctrl_++) {
+          for (let not_ = 0; not_ < N; not_++) {
+              if (ctrl_ !== not_) {
+                  let term0 = [[math.complex(1, 0)]];
+                  let term1 = [[math.complex(1, 0)]];
+
+                  for (let k = 0; k < N; k++) {
+                      if (k === ctrl_) {
+                          term0 = math.kron(term0, P0);
+                          term1 = math.kron(term1, P1);
+                      } else if (k === not_) {
+                          term0 = math.kron(term0, I);
+                          term1 = math.kron(term1, X);
+                      } else {
+                          term0 = math.kron(term0, I);
+                          term1 = math.kron(term1, I);
+                      }
+                  }
+
+                  let cnot_array = [];
+                  for (let i = 0; i < term0.length; i++) {
+                      cnot_array[i] = [];
+                      for (let j = 0; j < term0[i].length; j++) {
+                          cnot_array[i][j] = math.add(term0[i][j], term1[i][j]);
+                      }
+                  }
+
+                  let array_name = `CNOT(${ctrl_},${not_})`;
+                  gates_arrays[array_name] = cnot_array;
+              }
+          }
+      }
+  }
+  
+  function setGatesArray() {
+      setCnotArray();
+      const gates_Matrix = [
+          [[1, 0], [0, 1]],
+          [[1/Math.sqrt(2), 1/Math.sqrt(2)],
+           [1/Math.sqrt(2), -1/Math.sqrt(2)]],
+          [[1, 0],
+           [0, math.exp(math.complex(0, Math.PI / 4))]],
+          [[1, 0],
+           [0, math.exp(math.complex(0, -Math.PI / 4))]],
+          [[1, 0], [0, 1]],
+          [[1, 0], [0, 1]],
+      ];
+
+      for (let i = 0; i < gates.length; i++) {
+          if (i !== 0 && i !== 4 && i !== 5) {
+              for (let j = 0; j < N; j++) {
+                  let circuit_array;
+                  for (let k = 0; k < N; k++) {
+                      if (k === 0) {
+                          circuit_array = (k === j) ? gates_Matrix[i] : gates_Matrix[0];
+                      } else {
+                          circuit_array = math.kron(circuit_array, (k === j) ? gates_Matrix[i] : gates_Matrix[0]);
+                      }
+                  }
+                  let array_name = `${gates[i]}(${j})`;
+                  gates_arrays[array_name] = circuit_array;
+
+              }
+          }
+      }    
+
+      let set_c = [];
+      for (let i = 0; i <= N; i++) {
+          set_c.push([0]);
+      }
+      set_c[0][0] = -1;
+
+      let total_depth = Math.pow(6, N);
+      for (let i = 0; i < total_depth; i++) {
+          set_c[0][0] += 1;
+
+          let depth_gates = [];
+          let ctrl_ = -1;
+          let not_ = -1;
+          let oneCNOT = true;
+
+          for (let n = 0; n < N; n++) {
+              if (set_c[n][0] > 5) {
+                  set_c[n][0] = 0;
+                  set_c[n + 1][0] += 1;
+              }
+
+              if (set_c[n][0] !== 4 && set_c[n][0] !== 5 && set_c[n][0] !== 0) {
+                  let gate_name = `${gates[set_c[n][0]]}(${n})`;
+                  depth_gates.push(gate_name);
+              } else if (set_c[n][0] === 4) {
+                  if (not_ === -1) {
+                      not_ = n;
+                  } else {
+                      oneCNOT = false;
+                  }
+              } else if (set_c[n][0] === 5) {
+                  if (ctrl_ === -1) {
+                      ctrl_ = n;
+                  } else {
+                      oneCNOT = false;
+                  }   
+              }
+          }
+
+          if (((ctrl_ !== -1 && not_ !== -1) || (ctrl_ === -1 && not_ === -1)) && oneCNOT === true && depth_gates.length !== 0) {
+              if (ctrl_ !== -1 && not_ !== -1) {
+                  let cnot_name = `CNOT(${ctrl_},${not_})`;
+                  depth_gates.push(cnot_name);
+              }
+
+              let depth_name = "";
+              let depth_array = gates_arrays["I"];
+              for (let x = 0; x < depth_gates.length; x++) {
+                  depth_name += depth_gates[x];
+                  depth_array = math.multiply(gates_arrays[depth_gates[x]], depth_array);
+              }
+
+              gates_arrays[depth_name] = depth_array;
+          }
+      }
+  }
+
+  function checkerDeferred(circuit) {
+    let result = identityDeferred(N);
+
+    for (let d = 0; d < circuit[0].length; d++) {
+      const gatesAtDepth = circuit.map(row => row[d]);
+      let layerMatrix = identityDeferred(N);
+
+      for (let q = 0; q < N; q++) {
+        const gid = gatesAtDepth[q];
+        if (gid === 0 || gid >= 4) continue;
+        const gate = getDeferredGate(gid);
+        const applied = apply_single_qubit_gate_js(q, gate, N);
+        layerMatrix = matmulDeferred(applied, layerMatrix);
+      }
+
+      for (let ctrl = 0; ctrl < N; ctrl++) {
+        if (gatesAtDepth[ctrl] === 5) {
+          for (let tgt = 0; tgt < N; tgt++) {
+            if (gatesAtDepth[tgt] === 4) {
+              const cnot = apply_cnot_js(ctrl, tgt, N);
+              layerMatrix = matmulDeferred(cnot, layerMatrix);
+            }
+          }
+        }
+      }
+
+      result = matmulDeferred(layerMatrix, result);
+    }
+
+    return result;
+  }
+
+  setGatesArray();
+
+  var screenshot_ = false;
+  let draggedGate = null;
+  let data = [{
+    gen: 1,
+    circuit: [[5, 1, 5, 2, 5, 1, 5],
+              [4, 2, 4, 3, 4, 0, 4]],
+    fitness: 0
+  }];
+  let data0 = [{
+    gen: 1,
+    circuit: [[5, 1, 5, 2, 5, 1, 5],
+              [4, 2, 4, 3, 4, 0, 4]],
+    fitness: 0
+  }];
+  document.getElementById('genSlider').max = data.length;
+
+  const gateMap = ['empty', 'H', 'T', 'T†', 'X', 'C'];
+
+  const ctx = canvas.getContext('2d');
+  let fitnessChart;
+  let circuitData = null;
+
+  updateFitnessChart();
+  renderCircuit(1);
+
+  function updateMatrixDisplay(m) {
+    const table = document.getElementById('matrix');
+    table.innerHTML = '';
+    const size = m.size()[0];
+
+    for (let i = 0; i < size; i++) {
+      const row = document.createElement('tr');
+
+      for (let j = 0; j < size; j++) {
+        const cell = document.createElement('td');
+        const v = m.get([i, j]);
+        const re = math.round(math.re(v), 7);
+        const im = math.round(math.im(v), 7);
+        const reColor = (re === 0) ? '#cbd5e1' : '#1e293b';
+        const imColor = (im === 0) ? '#cbd5e1' : '#1e293b';
+
+        cell.innerHTML = `
+          <div style="font-size:16px; line-height:1.4; text-align:center;">
+            <div style="color:${reColor}; font-weight: 600;">
+              ${re.toFixed(7)}
+            </div>
+            <div style="color:${imColor}; font-weight: 600;">
+              ${im >= 0 ? '+' : ''}${im.toFixed(7)}<span style="color:#2563eb; font-weight:700;">i</span>
+            </div>
+          </div>
+        `;
+
+        row.appendChild(cell);
+      }
+      table.appendChild(row);
+    }
+  }
+
+  function circuitsAreEqual(a, b) {
+    return JSON.stringify(a.circuit) === JSON.stringify(b.circuit);
+  }
+
+  function findPreviousChange(currentIndex) {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (!circuitsAreEqual(data[i], data[currentIndex])) return i;
+    }
+    return currentIndex;
+  }
+ 
+  function findNextChange(currentIndex) {
+    for (let i = currentIndex + 1; i < data.length; i++) {
+      if (!circuitsAreEqual(data[i], data[currentIndex])) return i;
+    }
+    return currentIndex;
+  }
+
+  document.getElementById("FunctionName").addEventListener("change", function() {
+  const depthInput = document.getElementById("circuitDepth");
+
+  const slider = document.getElementById('genSlider');
+  const label = document.getElementById('genLabel');
+  slider.value = 1;
+  label.innerText = 1;
+
+  if (this.value === "ctrlS")
+  {
+    d0_gen = 0;
+    N = 2;
+    M = 4;
+    depthInput.value = M;
+
+    TargetArrat = [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, math.complex(0, 1)],
+    ];
+    data = [{
+    gen: 1,
+    circuit: [[5, 2, 5, 0],
+            [4, 3, 4, 2]],
+    fitness: 0
+    }];
+  }
+  else if (this.value === "sqrt(SWAP)")
+  {
+    d0_gen = 0;
+    N = 2;
+    M = 7;
+    depthInput.value = M;
+
+    TargetArrat = [
+        [1, 0,                       0,                       0],
+        [0, math.complex(0.5, 0.5),  math.complex(0.5, -0.5), 0],
+        [0, math.complex(0.5, -0.5), math.complex(0.5, 0.5),  0],
+        [0, 0,                       0,                       1],
+    ];
+    data = [{
+      gen: 1,
+      circuit: [[5, 1, 5, 2, 5, 1, 5],
+                [4, 2, 4, 3, 4, 0, 4]],
+      fitness: 0
+    }];
+
+    }
+    else if (this.value === "HHL")
+    {
+    d0_gen = 0;
+    N = 3;
+    M = 12;
+    depthInput.value = M;
+
+    TargetArrat = [
+        [ 0, 0,  0, math.complex(0, -1), 0, 0,  0, 0],
+        [ 0, 0, -1, 0,                   0, 0,  0, 0],
+        [ 0, 1,  0, 0,                   0, 0,  0, 0],
+        [-1, 0,  0, 0,                   0, 0,  0, 0],
+        [ 0, 0,  0, 0,                   1, 0,  0, 0],
+        [ 0, 0,  0, 0,                   0, 1,  0, 0],
+        [ 0, 0,  0, 0,                   0, 0, -1, 0],
+        [ 0, 0,  0, 0,                   0, 0,  0, math.complex(0, 1)]
+    ];
+    data = [{
+      gen: 1,
+      circuit: [[0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0],
+                [3, 5, 1, 5, 3, 3, 4, 0, 0, 4, 2, 2],
+                [3, 4, 2, 4, 3, 3, 5, 1, 4, 5, 2, 2]],
+      fitness: 0
+    }];
+    }
+    else if (this.value === "HHL_global_phase")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 11;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [0,  0, 0, math.complex(0, 1), 0,  0, 0, 0],
+          [0,  0, 1, 0,                  0,  0, 0, 0],
+          [0, -1, 0, 0,                  0,  0, 0, 0],
+          [1,  0, 0, 0,                  0,  0, 0, 0],
+          [0,  0, 0, 0,                 -1,  0, 0, 0],
+          [0,  0, 0, 0,                  0, -1, 0, 0],
+          [0,  0, 0, 0,                  0,  0, 1, 0],
+          [0,  0, 0, 0,                  0,  0, 0, math.complex(0, -1)]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[0, 0, 5, 2, 2, 2, 2, 0, 0, 0, 0],
+                  [2, 5, 4, 1, 2, 2, 2, 2, 4, 1, 5],
+                  [2, 4, 3, 0, 0, 0, 0, 0, 5, 0, 4]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Toffoli")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 8;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 1, 0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[3, 4, 2, 4, 3, 4, 2, 4],
+                  [3, 0, 5, 5, 5, 0, 0, 5],
+                  [1, 5, 4, 2, 4, 5, 3, 1]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Peres")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 8;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 1, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[2, 0, 0, 5, 5, 5, 0, 0],
+                  [2, 4, 3, 0, 4, 2, 4, 3],
+                  [1, 5, 2, 4, 3, 4, 5, 1]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "TOFPN")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 1, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[2, 0, 0, 5, 4, 3, 0, 4, 5],
+                  [3, 4, 2, 4, 0, 3, 4, 2, 4],
+                  [1, 5, 2, 0, 5, 0, 5, 5, 1]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "OR")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 1, 0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[0, 4, 3, 4, 3, 4, 2, 4, 2],
+                  [0, 0, 3, 5, 4, 2, 4, 5, 5],
+                  [1, 5, 2, 0, 5, 5, 5, 1, 4]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Fredkin")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 11;
+      depthInput.value = M;
+      TargetArrat = [
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 1, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[0, 2, 4, 3, 4, 2, 4, 3, 0, 4, 0],
+                  [4, 2, 0, 0, 5, 4, 0, 3, 4, 5, 4],
+                  [5, 1, 5, 2, 0, 5, 5, 0, 5, 1, 5]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Permutation")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 11;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [0, 0, 0, 0, 0, 0, 1, 0],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[4, 3, 4, 2, 4, 4, 2, 4, 3, 4, 4],
+                  [5, 1, 5, 5, 5, 0, 5, 5, 2, 1, 5],
+                  [0, 3, 0, 4, 2, 5, 4, 0, 0, 5, 0]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "HHL_50Time")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 12;
+      depthInput.value = M;
+
+      TargetArrat = [
+        [ 0, 0,  0, math.complex(0, -1), 0, 0,  0, 0],
+        [ 0, 0, -1, 0,                   0, 0,  0, 0],
+        [ 0, 1,  0, 0,                   0, 0,  0, 0],
+        [-1, 0,  0, 0,                   0, 0,  0, 0],
+        [ 0, 0,  0, 0,                   1, 0,  0, 0],
+        [ 0, 0,  0, 0,                   0, 1,  0, 0],
+        [ 0, 0,  0, 0,                   0, 0, -1, 0],
+        [ 0, 0,  0, 0,                   0, 0,  0, math.complex(0, 1)]
+      ];
+      data = [
+      {
+        gen: 1,
+        circuit: [
+                  [2, 2, 2, 5, 1, 4, 1, 3, 0, 0, 0, 0],
+                  [5, 3, 1, 4, 0, 5, 4, 2, 2, 2, 2, 1],
+                  [4, 2, 0, 0, 0, 0, 5, 1, 3, 3, 0, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 2,
+        circuit: [
+                  [5, 1, 4, 1, 5, 3, 3, 3, 3, 0, 0, 0],
+                  [3, 4, 5, 0, 4, 2, 0, 0, 0, 0, 0, 4],
+                  [4, 5, 2, 1, 3, 3, 1, 2, 2, 1, 3, 5]
+        ],
+        fitness: 0.07612046748871326151686389493988826870918273925781250
+      },
+      {
+        gen: 3,
+        circuit: [
+                  [1, 4, 5, 4, 5, 1, 2, 0, 4, 2, 2, 0],
+                  [2, 5, 4, 5, 2, 2, 5, 2, 2, 0, 0, 0],
+                  [0, 0, 0, 0, 4, 3, 4, 2, 5, 2, 0, 0]
+        ],
+        fitness: 0.50000000000000000000000000000000000000000000000000000
+      },
+      {
+        gen: 4,
+        circuit: [
+                  [0, 5, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0],
+                  [3, 4, 1, 3, 3, 3, 4, 1, 0, 0, 5, 0],
+                  [1, 2, 2, 4, 2, 2, 5, 4, 1, 2, 4, 3]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 5,
+        circuit: [
+                  [5, 0, 5, 2, 5, 5, 2, 2, 2, 0, 0, 0],
+                  [2, 4, 0, 0, 0, 4, 3, 5, 0, 4, 0, 0],
+                  [4, 5, 4, 2, 4, 3, 1, 4, 3, 5, 0, 0]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 6,
+        circuit: [
+                  [4, 5, 4, 0, 0, 5, 4, 2, 2, 2, 2, 0],
+                  [2, 4, 5, 5, 4, 4, 3, 5, 0, 5, 4, 0],
+                  [5, 2, 0, 4, 5, 0, 5, 4, 1, 4, 5, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 7,
+        circuit: [
+                  [2, 2, 5, 0, 0, 0, 0, 0, 0, 0, 5, 0],
+                  [4, 3, 4, 2, 2, 0, 0, 0, 4, 0, 0, 0],
+                  [5, 2, 1, 2, 2, 2, 1, 3, 5, 3, 4, 0]
+        ],
+        fitness: 0.14644660940672615812019330405746586620807647705078125
+      },
+      {
+        gen: 8,
+        circuit: [
+                  [3, 0, 4, 2, 2, 4, 5, 3, 0, 0, 0, 0],
+                  [4, 3, 5, 0, 0, 5, 0, 0, 0, 0, 4, 0],
+                  [5, 3, 3, 3, 1, 3, 4, 3, 3, 1, 5, 2]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 9,
+        circuit: [
+                  [3, 1, 0, 0, 4, 1, 2, 2, 2, 2, 5, 2],
+                  [5, 1, 3, 4, 1, 2, 4, 2, 1, 4, 4, 5],
+                  [4, 3, 3, 5, 5, 3, 5, 3, 3, 5, 0, 4]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 10,
+        circuit: [
+                  [3, 3, 5, 5, 3, 3, 0, 4, 2, 4, 0, 0],
+                  [3, 1, 2, 4, 2, 2, 1, 0, 0, 0, 0, 0],
+                  [1, 2, 4, 2, 2, 1, 3, 5, 3, 5, 3, 3]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 11,
+        circuit: [
+                  [2, 5, 4, 3, 0, 0, 0, 4, 5, 2, 5, 0],
+                  [4, 4, 5, 3, 4, 2, 5, 1, 4, 5, 4, 3],
+                  [5, 1, 2, 2, 5, 0, 4, 5, 3, 4, 0, 0]
+        ],
+        fitness: 0.27144660940672615812019330405746586620807647705078125
+      },
+      {
+        gen: 12,
+        circuit: [
+                  [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0],
+                  [2, 2, 2, 5, 1, 3, 5, 3, 1, 5, 0, 0],
+                  [3, 0, 0, 4, 3, 1, 4, 1, 0, 4, 0, 0]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 13,
+        circuit: [
+                  [0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [2, 1, 4, 4, 3, 1, 4, 0, 4, 3, 4, 0],
+                  [3, 0, 5, 1, 3, 3, 5, 1, 5, 2, 5, 2]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 14,
+        circuit: [
+                  [0, 5, 5, 5, 5, 0, 0, 5, 5, 0, 5, 0],
+                  [5, 2, 4, 1, 4, 0, 5, 4, 3, 3, 4, 0],
+                  [4, 4, 1, 4, 1, 3, 4, 3, 4, 2, 2, 0]
+        ],
+        fitness: 0.39644660940672626914249576657311990857124328613281250
+      },
+      {
+        gen: 15,
+        circuit: [
+                  [5, 2, 4, 3, 3, 3, 0, 0, 4, 2, 5, 0],
+                  [4, 4, 5, 5, 2, 2, 4, 5, 3, 5, 4, 0],
+                  [2, 5, 1, 4, 2, 0, 5, 4, 5, 4, 3, 0]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 16,
+        circuit: [
+                  [3, 3, 5, 3, 3, 0, 0, 0, 0, 0, 0, 0],
+                  [4, 5, 2, 1, 0, 0, 0, 0, 4, 5, 1, 0],
+                  [5, 4, 4, 1, 2, 1, 3, 3, 5, 4, 1, 3]
+        ],
+        fitness: 0.27144660940672615812019330405746586620807647705078125
+      },
+      {
+        gen: 17,
+        circuit: [
+                  [4, 0, 5, 3, 5, 4, 1, 4, 1, 5, 2, 2],
+                  [5, 2, 0, 0, 0, 5, 0, 0, 4, 1, 2, 5],
+                  [3, 1, 4, 1, 4, 0, 0, 5, 5, 4, 2, 4]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 18,
+        circuit: [
+                  [2, 2, 0, 0, 0, 4, 2, 4, 5, 0, 0, 0],
+                  [3, 1, 0, 5, 1, 5, 3, 5, 0, 4, 0, 0],
+                  [3, 3, 1, 4, 2, 1, 3, 1, 4, 5, 0, 0]
+        ],
+        fitness: 0.32322330470336324559355034580221399664878845214843750
+      },
+      {
+        gen: 19,
+        circuit: [
+                  [3, 5, 0, 5, 0, 5, 4, 0, 5, 4, 3, 0],
+                  [2, 1, 2, 4, 5, 4, 2, 1, 4, 3, 3, 1],
+                  [1, 4, 3, 3, 4, 1, 5, 2, 2, 5, 1, 0]
+        ],
+        fitness: 0.14644660940672626914249576657311990857124328613281250
+      },
+      {
+        gen: 20,
+        circuit: [
+                  [1, 0, 0, 0, 2, 2, 1, 2, 2, 1, 0, 0],
+                  [0, 5, 2, 5, 1, 3, 3, 1, 4, 2, 2, 0],
+                  [2, 4, 2, 4, 1, 3, 3, 0, 5, 1, 3, 3]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 21,
+        circuit: [
+                  [2, 2, 5, 2, 0, 5, 4, 2, 4, 3, 5, 0],
+                  [5, 1, 4, 5, 4, 4, 5, 5, 5, 4, 4, 0],
+                  [4, 2, 2, 4, 5, 3, 0, 4, 3, 5, 3, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 22,
+        circuit: [
+                  [3, 3, 3, 3, 0, 0, 5, 5, 0, 0, 0, 0],
+                  [0, 4, 5, 2, 2, 4, 0, 4, 4, 2, 4, 0],
+                  [2, 5, 4, 2, 0, 5, 4, 0, 5, 1, 5, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 23,
+        circuit: [
+                  [1, 3, 3, 5, 1, 3, 3, 4, 1, 2, 4, 0],
+                  [5, 4, 2, 4, 1, 5, 0, 5, 0, 0, 5, 0],
+                  [4, 5, 3, 0, 0, 4, 0, 0, 0, 0, 0, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 24,
+        circuit: [
+                  [0, 4, 0, 4, 0, 0, 4, 4, 2, 4, 3, 3],
+                  [3, 5, 3, 5, 5, 1, 5, 2, 4, 5, 5, 0],
+                  [3, 0, 0, 0, 4, 3, 0, 5, 5, 0, 4, 2]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 25,
+        circuit: [
+                  [5, 3, 3, 0, 5, 0, 0, 0, 0, 0, 0, 0],
+                  [2, 1, 4, 1, 4, 3, 3, 5, 4, 1, 5, 0],
+                  [4, 0, 5, 0, 0, 0, 0, 4, 5, 2, 4, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 26,
+        circuit: [
+                  [3, 5, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0],
+                  [4, 2, 0, 0, 0, 4, 0, 5, 1, 0, 4, 5],
+                  [5, 4, 1, 3, 3, 5, 3, 4, 2, 2, 5, 4]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 27,
+        circuit: [
+                  [5, 1, 0, 0, 0, 4, 1, 2, 2, 0, 0, 0],
+                  [4, 2, 1, 3, 5, 5, 4, 0, 5, 1, 3, 0],
+                  [1, 0, 0, 0, 4, 1, 5, 2, 4, 2, 1, 0]
+        ],
+        fitness: 0.39644660940672626914249576657311990857124328613281250
+      },
+      {
+        gen: 28,
+        circuit: [
+                  [2, 2, 5, 2, 2, 0, 0, 0, 0, 0, 0, 0],
+                  [2, 4, 3, 0, 5, 4, 0, 0, 0, 0, 0, 0],
+                  [2, 5, 4, 1, 4, 5, 0, 0, 0, 0, 0, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 29,
+        circuit: [
+                  [2, 4, 1, 4, 1, 3, 5, 3, 4, 2, 2, 2],
+                  [4, 5, 4, 5, 2, 4, 3, 0, 5, 4, 0, 0],
+                  [5, 1, 5, 2, 2, 5, 4, 1, 3, 5, 3, 0]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 30,
+        circuit: [
+                  [2, 1, 0, 0, 0, 0, 5, 1, 2, 0, 4, 2],
+                  [1, 4, 1, 4, 5, 3, 0, 5, 0, 4, 3, 3],
+                  [3, 5, 3, 5, 4, 3, 4, 4, 1, 5, 5, 0]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 31,
+        circuit: [
+                  [5, 1, 2, 2, 1, 2, 5, 1, 0, 4, 0, 5],
+                  [1, 3, 5, 1, 5, 2, 4, 4, 1, 5, 3, 4],
+                  [4, 3, 4, 0, 4, 2, 2, 5, 1, 3, 0, 0]
+        ],
+        fitness: 0.32690443408917324585871710951323620975017547607421875
+      },
+      {
+        gen: 32,
+        circuit: [
+                  [2, 2, 0, 0, 0, 0, 0, 4, 5, 4, 5, 0],
+                  [2, 2, 2, 5, 4, 1, 3, 5, 3, 5, 0, 0],
+                  [3, 3, 0, 4, 5, 2, 2, 2, 4, 2, 4, 0]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 33,
+        circuit: [
+                  [1, 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0],
+                  [3, 3, 3, 0, 5, 1, 5, 5, 3, 5, 3, 5],
+                  [3, 1, 3, 3, 4, 0, 4, 2, 1, 4, 2, 4]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 34,
+        circuit: [
+                  [5, 5, 0, 0, 0, 0, 0, 5, 0, 5, 5, 0],
+                  [1, 4, 2, 5, 2, 0, 4, 4, 2, 4, 1, 5],
+                  [4, 2, 2, 4, 1, 2, 5, 2, 1, 0, 4, 4]
+        ],
+        fitness: 0.26960909841318803081833266332978382706642150878906250
+      },
+      {
+        gen: 35,
+        circuit: [
+                  [5, 3, 3, 0, 5, 0, 4, 3, 4, 4, 3, 4],
+                  [4, 3, 3, 4, 4, 2, 2, 1, 2, 5, 2, 5],
+                  [1, 3, 3, 5, 1, 3, 5, 3, 5, 0, 0, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 36,
+        circuit: [
+                  [2, 2, 0, 5, 4, 2, 5, 4, 0, 0, 0, 0],
+                  [5, 1, 5, 0, 5, 5, 0, 5, 0, 0, 0, 0],
+                  [4, 2, 4, 4, 3, 4, 4, 3, 3, 0, 0, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      },
+      {
+        gen: 37,
+        circuit: [
+                  [3, 3, 4, 2, 5, 4, 3, 5, 3, 5, 5, 0],
+                  [2, 0, 5, 0, 0, 5, 1, 3, 0, 0, 0, 5],
+                  [3, 0, 0, 0, 4, 3, 3, 4, 3, 4, 4, 4]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 38,
+        circuit: [
+                  [2, 2, 5, 0, 0, 0, 0, 5, 0, 5, 0, 0],
+                  [3, 5, 4, 2, 4, 2, 5, 2, 4, 2, 0, 0],
+                  [1, 4, 1, 3, 5, 1, 4, 4, 5, 4, 0, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 39,
+        circuit: [
+                  [3, 3, 3, 5, 0, 0, 4, 3, 4, 3, 0, 0],
+                  [5, 1, 4, 4, 3, 4, 5, 5, 5, 2, 2, 0],
+                  [4, 0, 5, 0, 2, 5, 0, 4, 0, 3, 0, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 40,
+        circuit: [
+                  [3, 5, 3, 4, 3, 3, 1, 5, 1, 0, 0, 0],
+                  [2, 1, 3, 5, 3, 1, 0, 4, 2, 2, 0, 0],
+                  [2, 4, 1, 2, 2, 1, 3, 3, 1, 3, 3, 3]
+        ],
+        fitness: 0.14644660940672626914249576657311990857124328613281250
+      },
+      {
+        gen: 41,
+        circuit: [
+                  [2, 5, 2, 0, 0, 0, 5, 0, 5, 0, 0, 0],
+                  [1, 2, 2, 2, 2, 1, 4, 1, 4, 1, 0, 0],
+                  [2, 4, 2, 2, 1, 2, 1, 3, 3, 1, 3, 3]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 42,
+        circuit: [
+                  [3, 0, 0, 0, 5, 1, 0, 0, 4, 1, 3, 0],
+                  [0, 5, 2, 5, 1, 0, 4, 5, 5, 2, 2, 1],
+                  [3, 4, 3, 4, 4, 3, 5, 4, 3, 3, 1, 3]
+        ],
+        fitness: 0.29289321881345242726268907063058577477931976318359375
+      },
+      {
+        gen: 43,
+        circuit: [
+                  [0, 5, 0, 5, 5, 0, 0, 0, 5, 0, 0, 0],
+                  [3, 1, 0, 0, 4, 1, 0, 4, 4, 2, 4, 0],
+                  [1, 4, 1, 4, 2, 2, 2, 5, 1, 3, 5, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 44,
+        circuit: [
+                  [1, 4, 4, 1, 2, 5, 2, 0, 0, 0, 0, 0],
+                  [5, 5, 1, 2, 5, 4, 3, 3, 5, 0, 0, 0],
+                  [4, 0, 5, 1, 4, 1, 3, 0, 4, 0, 0, 0]
+        ],
+        fitness: 0.34671851756181171211323999159503728151321411132812500
+      },
+      {
+        gen: 45,
+        circuit: [
+                  [5, 5, 3, 0, 5, 1, 0, 4, 1, 2, 0, 0],
+                  [4, 1, 3, 3, 4, 3, 3, 5, 4, 1, 2, 2],
+                  [2, 4, 1, 2, 2, 2, 1, 0, 5, 0, 0, 0]
+        ],
+        fitness: 0.21141949252526237579274948075180873274803161621093750
+      },
+      {
+        gen: 46,
+        circuit: [
+                  [2, 2, 2, 0, 0, 3, 0, 5, 5, 2, 5, 3],
+                  [1, 3, 4, 3, 5, 0, 3, 4, 1, 0, 4, 0],
+                  [0, 2, 5, 1, 4, 2, 2, 1, 4, 3, 0, 1]
+        ],
+        fitness: 0.27144660940672615812019330405746586620807647705078125
+      },
+      {
+        gen: 47,
+        circuit: [
+                  [3, 0, 0, 0, 5, 3, 0, 0, 0, 0, 0, 5],
+                  [0, 5, 2, 5, 1, 4, 3, 3, 3, 3, 1, 4],
+                  [3, 4, 3, 4, 4, 5, 1, 2, 1, 3, 3, 1]
+        ],
+        fitness: 0.07612046748871315049456143242423422634601593017578125
+      },
+      {
+        gen: 48,
+        circuit: [
+                  [0, 0, 3, 5, 0, 5, 5, 0, 5, 0, 0, 0],
+                  [1, 2, 2, 4, 2, 1, 4, 2, 4, 5, 3, 5],
+                  [2, 1, 0, 3, 1, 4, 2, 2, 1, 4, 2, 4]
+        ],
+        fitness: 0.27144660940672626914249576657311990857124328613281250
+      },
+      {
+        gen: 49,
+        circuit: [
+                  [3, 0, 4, 0, 0, 4, 3, 3, 4, 5, 3, 0],
+                  [1, 3, 1, 2, 2, 5, 4, 2, 5, 2, 4, 1],
+                  [1, 3, 5, 3, 0, 0, 5, 1, 2, 4, 5, 1]
+        ],
+        fitness: 0.32520679529147877850903114449465647339820861816406250
+      },
+      {
+        gen: 50,
+        circuit: [
+                  [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [3, 4, 3, 5, 3, 3, 5, 0, 0, 4, 0, 0],
+                  [2, 5, 1, 4, 3, 1, 4, 1, 3, 5, 0, 0]
+        ],
+        fitness: 0.29289321881345253828499153314623981714248657226562500
+      }
+      ];
+    }
+    else if (this.value === "Grover3")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [-0.5, 0,  0.5, 0,  0.5, 0,  0.5, 0],
+          [ 0,   0,  0,   0,  0,   0,  0,   1],
+          [-0.5, 0, -0.5, 0,  0.5, 0, -0.5, 0],
+          [ 0,   0,  0,  -1,  0,   0,  0,   0],
+          [-0.5, 0,  0.5, 0, -0.5, 0, -0.5, 0],
+          [ 0,   0,  0,   0,  0,  -1,  0,   0],
+          [-0.5, 0, -0.5, 0, -0.5, 0,  0.5, 0],
+          [ 0,  -1,  0,   0,  0,   0,  0,   0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[1, 4, 2, 2, 2, 4, 2, 4, 3, 4, 2, 1, 5, 1, 2, 2, 2, 2],
+                  [1, 5, 2, 0, 0, 0, 5, 5, 5, 0, 0, 0, 4, 0, 2, 2, 2, 2],
+                  [0, 0, 0, 0, 0, 5, 4, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 2]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Grover3_global_phase")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [0.5, 0, -0.5, 0, -0.5, 0, -0.5, 0],
+          [0,   0,  0,   0,  0,   0,  0,  -1],
+          [0.5, 0,  0.5, 0, -0.5, 0,  0.5, 0],
+          [0,   0,  0,   1,  0,   0,  0,   0],
+          [0.5, 0, -0.5, 0,  0.5, 0,  0.5, 0],
+          [0,   0,  0,   0,  0,   1,  0,   0],
+          [0.5, 0,  0.5, 0,  0.5, 0, -0.5, 0],
+          [0,   1,  0,   0,  0,   0,  0,   0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[4, 3, 3, 3, 3, 1, 5, 3, 5, 3, 4, 5, 3, 4, 3, 4, 1],
+                  [5, 4, 1, 2, 4, 2, 0, 0, 0, 0, 5, 4, 3, 1, 4, 5, 0],
+                  [2, 5, 2, 2, 5, 0, 4, 2, 4, 0, 0, 0, 0, 5, 5, 0, 0]],
+        fitness: 0
+      }];
+    }
+
+
+    gates_arrays = {};
+    setGatesArray();
+    const canvas = document.getElementById("circuitCanvas");
+    canvas.width = leftPadding + M * gateWidth + rightPadding;
+    canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
+    document.getElementById('genSlider').max = data.length;
+    renderCircuit(1);
+  });
+
+  document.addEventListener('keydown', function (event) {
+    const slider = document.getElementById('genSlider');
+    let current = parseInt(slider.value);
+    const max = parseInt(slider.max);
+    const min = parseInt(slider.min);
+
+    if (event.key === 'a' && current > min) {
+      slider.value = current - 1;
+      slider.dispatchEvent(new Event('input'));
+      d0_gen = 0;
+    } else if (event.key === 'd' && current < max) {
+      slider.value = current + 1;
+      slider.dispatchEvent(new Event('input'));
+      d0_gen = 0;
+    } else if (event.key === 'w') {
+      const target = findPreviousChange(current - 1) + 1;
+      slider.value = target;
+      slider.dispatchEvent(new Event('input'));
+      d0_gen = 0;
+    } else if (event.key === 's') {
+      const target = findNextChange(current - 1) + 1;
+      slider.value = target;
+      slider.dispatchEvent(new Event('input'));
+      d0_gen = 0;
+    }
+  });
+
+  document.getElementById('fileInput').addEventListener('change', function(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const lines = e.target.result.split('\n').filter(l => l.trim() !== '');
+      data = [];
+
+      for (let i = 0; i < lines.length; i += 2) {
+        const genNumber = parseInt(lines[i]);
+        const match = lines[i + 1].matchAll(/\[([^\]]+)\]/g);
+        const circuit = [];
+        for (const m of match) {
+          circuit.push(m[1].trim().split(/\s+/).map(Number));
+        }
+
+        const fitnessStr = lines[i + 1].replace(/\[[^\]]+\]/g, '').trim();
+        const fitness = parseFloat(fitnessStr);
+
+        data.push({ gen: genNumber, circuit, fitness });
+      }
+
+      document.getElementById('genSlider').max = data.length;
+      updateFitnessChart();
+      renderCircuit(1);
+      document.getElementById("fitnessChart").style.display = "block";
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('genSlider').addEventListener('input', function() {
+    const gen = parseInt(this.value);
+    document.getElementById('genLabel').innerText = gen;
+    renderCircuit(gen);
+    d0_gen = 0;
+  });
+
+  document.querySelectorAll('.draggable-gate').forEach(gate => {
+    gate.addEventListener('dragstart', (e) => {
+      draggedGate = e.target.dataset.gate;
+    });
+  });
+  
+  document.querySelectorAll('.feature-button').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.feature-button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      const tab = this.dataset.tab;
+      document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
+      document.getElementById("fitnessChartContainer").style.display = (tab === "analyzer") ? "block" : "none";
+      document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
+      document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
+      document.getElementById("HS_fitness").style.display = (tab !== "function") ? "block" : "none";
+      
+      if (tab === "analyzer") {
+        setTimeout(() => {
+          updateFitnessChart();
+        }, 100);
+      }
+    });
+  });
+  
+  canvas.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+  var d0_gen = 0;
+
+  canvas.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+
+    if (!d) return;
+    
+    const x = e.offsetX;
+    const y = e.offsetY;
+
+    const col = Math.round((x - leftPadding) / gateWidth);
+    if (col < 0 || col >= d0.circuit[0].length) return;
+    
+    const row = Math.round((y - bottomPadding) / qubitSpacing);
+    if (row < 0 || row >= d0.circuit.length) return;
+
+    if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5)
+    {
+      for (let i = 0; i < d0.circuit.length; i++) 
+      {
+          if ((d0.circuit[i][col] === 4 || d0.circuit[i][col] === 5) && (i !== row))
+          {
+            d0.circuit[i][col] = 0;
+          }
+      }
+    }
+    d0.circuit[row][col] = 0;
+
+    renderCircuit(0);
+    updateFitness(d0);
+  });
+
+  canvas.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+
+    if (!d) return;
+
+    const x = e.offsetX;
+    const y = e.offsetY;
+
+    const col = Math.round((x - leftPadding) / gateWidth);
+    if (col < 0 || col >= d0.circuit[0].length) return;
+    
+    const row = Math.round((y - topPadding) / qubitSpacing);
+    if (row < 0 || row >= d0.circuit.length) return;
+
+    const g = parseInt(draggedGate);
+
+    if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5 || g === 4 || g === 5)
+    { 
+      let ctrl_ = -1;
+      let not_ = -1;
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if (d0.circuit[i][col] === 5)
+        {
+          ctrl_ = i;
+        }
+        else if (d0.circuit[i][col] === 4)
+        {
+          not_ = i;
+        }
+      }
+      if (ctrl_ !== -1 && not_ !== -1)
+      {
+        d0.circuit[ctrl_][col] = 0;
+        d0.circuit[not_][col] = 0;
+      }
+    }
+    d0.circuit[row][col] = g;
+
+    let had_ctrl_not = 0;
+    if (g === 4 || g === 5)
+    {
+      for (let i = 0; i < d0.circuit.length; i++)
+      {
+        if ((d0.circuit[i][col] === 4 || d0.circuit[i][col] === 5) && i !== row)
+        {
+          had_ctrl_not = 1;
+        }
+      }
+    }
+
+    if (g === 4 && had_ctrl_not === 0)
+    {
+      if (row !== (d0.circuit.length - 1))
+      {
+        if (d0.circuit[row + 1][col] === 0)
+        {
+          d0.circuit[row + 1][col] = 5;
+        }
+      }
+      else
+      {
+        if (d0.circuit[row - 1][col] === 0)
+        {
+          d0.circuit[row - 1][col] = 5;
+        }
+      }
+    }
+    else if (g === 5 && had_ctrl_not === 0)
+    {
+      if (row !== (d0.circuit.length - 1))
+      {
+        if (d0.circuit[row + 1][col] === 0)
+        {
+          d0.circuit[row + 1][col] = 4;
+        }
+      }
+      else
+      {
+        if (d0.circuit[row - 1][col] === 0)
+        {
+          d0.circuit[row - 1][col] = 4;
+        }
+      }
+    }
+
+    renderCircuit(0);
+    updateFitness(d0);
+  });
+
+  let isScrolling = false;
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (isScrolling) return;
+    isScrolling = true;
+
+    setTimeout(() => {
+      isScrolling = false;
+    }, 25);
+              
+    e.preventDefault();
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+
+    if (!d) return;
+
+    const x = e.offsetX;
+    const y = e.offsetY;
+
+    const col = Math.round((x - leftPadding) / gateWidth);
+    if (col < 0 || col >= d0.circuit[0].length) return;
+    
+    const row = Math.round((y - topPadding) / qubitSpacing);
+    if (row < 0 || row >= d0.circuit.length) return;
+
+    const wheel_ = e.deltaY;
+    if (wheel_ < 0)
+    {
+      d0.circuit[row][col] += 1;
+      if (d0.circuit[row][col] > 5)
+      {
+        d0.circuit[row][col] = 0;
+      }
+    }
+    else if (wheel_ > 0)
+    {
+      d0.circuit[row][col] -= 1;
+      if (d0.circuit[row][col] < 0)
+      {
+        d0.circuit[row][col] = 5;
+      }
+    }
+    
+    renderCircuit(0);
+    updateFitness(d0);
+  });
+
+  canvas.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    mouseDownPos = {
+      x: e.offsetX,
+      y: e.offsetY
+    };
+  });
+
+  canvas.addEventListener("mouseup", (e) => {
+    e.preventDefault();
+    const gen = parseInt(document.getElementById('genSlider').value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    if (d0_gen !== gen)
+    {
+      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      d0_gen = gen;
+    }
+
+    if (!d) return;
+
+    mouseUpPos = {
+      x: e.offsetX,
+      y: e.offsetY
+    };
+    
+    const col_start = Math.round((mouseDownPos.x - leftPadding) / gateWidth);
+    if (col_start < 0 || col_start >= d0.circuit[0].length) return;
+    
+    const row_start = Math.round((mouseDownPos.y - topPadding) / qubitSpacing);
+    if (row_start < 0 || row_start >= d0.circuit.length) return;
+
+    const col_end = Math.round((mouseUpPos.x - leftPadding) / gateWidth);
+    if (col_end < 0 || col_end >= d0.circuit[0].length) return;
+    
+    const row_end = Math.round((mouseUpPos.y - topPadding) / qubitSpacing);
+    if (row_end < 0 || row_end >= d0.circuit.length) return;
+
+    if (col_start !== col_end || row_start !== row_end)
+    {
+      if ((d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5) && col_start !== col_end)
+      {
+        for (let i = 0; i < d0.circuit.length; i++)
+        {
+          if (d0.circuit[i][col_end] === 4 || d0.circuit[i][col_end] === 5)
+          {
+            d0.circuit[i][col_end] = 0;
+          }
+        }
+      }
+      let row_start_ = -1;
+      if (d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5)
+      {
+        for (let i = 0; i < d0.circuit.length; i++)
+        {
+          if ((d0.circuit[i][col_start] === 4 || d0.circuit[i][col_start] === 5) && i !== row_start)
+          {
+            row_start_ = i;
+          }
+        }
+      }
+      if (row_start_ !== -1 && (row_start_ + (row_end - row_start)) >= 0 && (row_start_ + (row_end - row_start)) <= (d0.circuit.length - 1)  && col_start !== col_end)
+      {
+        d0.circuit[row_start_ + (row_end - row_start)][col_end] = d0.circuit[row_start_][col_start];
+        d0.circuit[row_start_][col_start] = 0;
+        d0.circuit[row_end][col_end] = d0.circuit[row_start][col_start];
+        d0.circuit[row_start][col_start] = 0;
+      }
+      else if (col_start === col_end && (d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5) && (d0.circuit[row_end][col_end] === 4 || d0.circuit[row_end][col_end] === 5))
+      {
+        let flash = d0.circuit[row_start][col_start];
+        d0.circuit[row_start][col_start] = d0.circuit[row_end][col_end];
+        d0.circuit[row_end][col_end] = flash;
+      }
+      else
+      {
+        d0.circuit[row_end][col_end] = d0.circuit[row_start][col_start];
+        d0.circuit[row_start][col_start] = 0;
+      }
+      renderCircuit(0);
+      updateFitness(d0);
+    }
+  });
+
+  function drawGate(x, y, label, type) {
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    if (type === 'H') {
+      ctx.fillStyle = '#f88';
+      ctx.fillRect(x - 15, y - 15, 30, 30);
+      ctx.strokeRect(x - 15, y - 15, 30, 30);
+    } else if (type === 'T' || type === 'T†') {
+      ctx.fillStyle = (type === 'T') ? '#88f' : '#4cf';
+      ctx.fillRect(x - 15, y - 15, 30, 30);
+      ctx.strokeRect(x - 15, y - 15, 30, 30);
+    } else if (type === 'X') {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y, 12, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y - 8);
+      ctx.lineTo(x, y + 8);
+      ctx.moveTo(x - 8, y);
+      ctx.lineTo(x + 8, y);
+      ctx.stroke();
+    } else if (type === 'C') {
+      ctx.fillStyle = '#00f';
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+    } else if (type === 'X_') {
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y, 12, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y - 8);
+      ctx.lineTo(x, y + 8);
+      ctx.moveTo(x - 8, y);
+      ctx.lineTo(x + 8, y);
+      ctx.stroke();
+      ctx.globalAlpha = 1.0;
+    } else if (type === 'C_') {
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#00f';
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+      ctx.globalAlpha = 1.0;
+    }
+
+    if (['H', 'T', 'T†'].includes(type)) {
+      ctx.fillStyle = '#000';
+      ctx.font = '14px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x, y);
+    }
+  }
+
+  function updateFitness(d) {
+    const deferredMat = checkerDeferred(d.circuit);
+
+    const size = deferredMat.length;
+    const mat = math.matrix(
+      deferredMat.map(row => row.map(cell => cell.evaluate()))
+    );
+    
+    updateMatrixDisplay(mat);
+    if(screenshot_ === true)
+    {
+      captureAndCrop();
+    }
+
+    const prod = math.multiply(math.conj(math.transpose(mat)), TargetArrat);
+    const num = math.abs(math.trace(prod));
+    const dem = prod.size()[0];
+    const fitness = 1 - num / dem;
+    document.getElementById('fitnessValueShort').innerText = fitness.toFixed(53);
+    document.getElementById('fitnessValueShort').setAttribute('title', `Full value: ${fitness.toFixed(53)}`);
+
+    // 🔶 新增 Diamond Norm 計算與顯示
+    const diamondNorm = 2 * Math.sqrt(1 - Math.pow(num / dem, 2));
+    document.getElementById('diamondNormValue').innerText = diamondNorm.toFixed(53);
+    document.getElementById('diamondNormValue').setAttribute('title', `Full value: ${diamondNorm.toFixed(53)}`);
+
+  }
+
+  function updateArray(d) {
+    const deferredMat = checkerDeferred(d.circuit);
+
+    const mat = math.matrix(
+      deferredMat.map(row => row.map(cell => cell.evaluate()))
+    );
+
+    updateMatrixDisplay(mat);
+    if (screenshot_ === true) {
+      captureAndCrop();
+    }
+  }
+
+  function renderCircuit(gen) {
+    let d;
+    if (gen === 0)
+    {
+      d = data0.find(item => item.gen === 1);
+    }
+    else
+    {
+      d = data.find(item => item.gen === gen);
+    }
+
+    if (!d) return;
+
+    circuitData = d.circuit;
+
+    const maxDepth = Math.max(...d.circuit.map(row => row.length));
+    
+    // ==== ⭐ 加入高清渲染邏輯 ⭐ ====
+    const dpr = window.devicePixelRatio || 1;
+    const canvasWidthCSS = leftPadding + maxDepth * gateWidth;
+    const canvasHeightCSS = topPadding + (d.circuit.length - 1) * qubitSpacing + bottomPadding;
+
+    canvas.width = canvasWidthCSS * dpr;
+    canvas.height = canvasHeightCSS * dpr;
+    canvas.style.width = canvasWidthCSS + 'px';
+    canvas.style.height = canvasHeightCSS + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    document.getElementById('fitnessValueShort').innerText = d.fitness.toFixed(53);
+    document.getElementById('fitnessValueShort').setAttribute('title', `Full value: ${d.fitness.toFixed(53)}`);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let qY = [];
+
+    ctx.strokeStyle = '#bbb';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    for (let i = 0; i < d.circuit.length; i++) {
+      qY.push(topPadding + i * qubitSpacing);
+      ctx.moveTo(0, qY[i]);
+      ctx.lineTo(canvasWidthCSS, qY[i]);
+    };
+
+    ctx.stroke();
+
+    for (let i = 0; i < maxDepth; i++) {
+      const x = leftPadding + i * gateWidth;
+      let ctrl_ = -1;
+      let not_ = -1;
+
+      for (let j = 0; j < d.circuit.length; j++) {
+        const gate = d.circuit[j][i];
+        if (gate === undefined) continue;
+
+        const gateName = gateMap[gate];
+        if (gateName === "C") {
+          ctrl_ = j;
+          drawGate(x, qY[ctrl_], '', 'C_');
+        } else if (gateName === "X") {
+          not_ = j;
+          drawGate(x, qY[not_], '', 'X_');
+        } else if (gateName !== 'empty') {
+          drawGate(x, qY[j], gateName, gateName);
+        }
+      }
+
+      if(ctrl_ !== -1 && not_ !== -1)
+      {
+        drawGate(x, qY[not_], '', 'X');
+        drawGate(x, qY[ctrl_], '', 'C');
+        ctx.beginPath();
+        ctx.moveTo(x, qY[not_]);
+        ctx.lineTo(x, qY[ctrl_]);
+        ctx.stroke();
+      }
+    }
+
+    const gen_ = parseInt(document.getElementById('genSlider').value);
+    const d_ = data.find(item => item.gen === gen_);
+    updateArray(d_);
+
+    updateCircuitStats(d.circuit);
+  }
+
+  function updateFitnessChart() {
+    if (!data || data.length === 0) {
+        Plotly.purge('fitnessChart'); // Clear the chart if no data
+        return;
+    }
+    const genValues = data.map(d => d.gen);
+    const fitnessValues = data.map(d => d.fitness);
+    const maxGen = data.length > 0 ? Math.max(...genValues) : 1;
+
+    const trace = {
+        x: genValues,
+        y: fitnessValues,
+        mode: 'lines+markers',
+        type: 'scatter', // Changed from scattergl to scatter for broader compatibility
+        line: { color: '#1f77b4', width: 2 }, // Bright red for high visibility
+        marker: { size: 5, color: '#1f77b4' }, // Bright red for high visibility
+        name: 'Fitness',
+        hovertemplate: 'Iteration %{x:.0f}<br>Fitness %{y:.53f}<extra></extra>'
+    };
+
+    const layout = {
+        title: {
+            text: 'Fitness Evolution',
+            font: { size: 16, color: '#1a202c' }
+        },
+        xaxis: {
+            title: 'Iteration',
+            tickfont: { size: 12, color: '#4a5568' },
+            titlefont: { size: 14, color: '#1a202c' },
+            range: [0, maxGen],
+            rangemode: 'nonnegative',
+            tickformat: 'd',
+            gridcolor: '#e2e8f0' // Restored grid color
+        },
+        yaxis: {
+            title: 'Fitness',
+            tickfont: { size: 12, color: '#4a5568' },
+            titlefont: { size: 14, color: '#1a202c' },
+            range: [0, 1],
+            gridcolor: '#e2e8f0' // Restored grid color
+        },
+        margin: { l: 60, r: 30, t: 50, b: 60 },
+        height: 400, // Restored height to 400
+        dragmode: 'zoom',
+        plot_bgcolor: 'white', // Explicitly set plot background
+        paper_bgcolor: 'white' // Explicitly set paper background
+    };
+
+    const config = {
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+    };
+
+    Plotly.newPlot('fitnessChart', [trace], layout, config);
+  }
+
+  function jumpToGeneration() {
+    const input = document.getElementById('genInput');
+    const slider = document.getElementById('genSlider');
+    const max = parseInt(slider.max);
+    const min = parseInt(slider.min);
+    const value = parseInt(input.value);
+    d0_gen = 0;
+
+    if (!isNaN(value) && value >= min && value <= max) {
+      slider.value = value;
+      slider.dispatchEvent(new Event('input'));
+    } else {
+      alert(`Please enter a number between ${min} and ${max}`);
+    }
+  }
+
+  function identityDeferred(n) {
+    const size = 1 << n;
+    const I = Array(size).fill(0).map(() =>
+      Array(size).fill().map(() => new DeferredCpx())
+    );
+    for (let i = 0; i < size; i++) {
+      I[i][i] = new DeferredCpx(math.complex(1, 0), false);
+    }
+    return I;
+  }
+
+  function kronDeferred(A, B) {
+    const r1 = A.length, c1 = A[0].length;
+    const r2 = B.length, c2 = B[0].length;
+    const result = Array(r1 * r2).fill(0).map(() =>
+      Array(c1 * c2).fill().map(() => new DeferredCpx())
+    );
+    for (let i = 0; i < r1; i++)
+      for (let j = 0; j < c1; j++)
+        for (let k = 0; k < r2; k++)
+          for (let l = 0; l < c2; l++)
+            result[i * r2 + k][j * c2 + l] = A[i][j].multiply(B[k][l]);
+    return result;
+  }
+
+  function matmulDeferred(A, B) {
+    const n = A.length, m = B[0].length, p = A[0].length;
+    const result = Array(n).fill(0).map(() =>
+      Array(m).fill().map(() => new DeferredCpx())
+    );
+    for (let i = 0; i < n; i++)
+      for (let k = 0; k < p; k++)
+        for (let j = 0; j < m; j++)
+          result[i][j] = result[i][j].add(A[i][k].multiply(B[k][j]));
+    return result;
+  }
+
+  function getDeferredGate(id) {
+    const I = [
+      [new DeferredCpx(math.complex(1, 0)), new DeferredCpx()],
+      [new DeferredCpx(), new DeferredCpx(math.complex(1, 0))]
+    ];
+    if (id === 0) return I;
+
+    if (id === 1) return [
+      [new DeferredCpx(math.complex(1, 0), true), new DeferredCpx(math.complex(1, 0), true)],
+      [new DeferredCpx(math.complex(1, 0), true), new DeferredCpx(math.complex(-1, 0), true)]
+    ];
+
+    if (id === 2) return [
+      [new DeferredCpx(math.complex(1, 0)), new DeferredCpx()],
+      [new DeferredCpx(), new DeferredCpx(math.complex(1, 1), true)]
+    ];
+
+    if (id === 3) return [
+      [new DeferredCpx(math.complex(1, 0)), new DeferredCpx()],
+      [new DeferredCpx(), new DeferredCpx(math.complex(1, -1), true)]
+    ];
+
+    throw new Error("Unknown gate id: " + id);
+  }
+
+  function apply_single_qubit_gate_js(target, gate, total_bits) {
+    let result = (target === 0) ? gate : getDeferredGate(0);
+    for (let i = 1; i < total_bits; i++) {
+      const g = (i === target) ? gate : getDeferredGate(0);
+      result = kronDeferred(result, g);
+    }
+    return result;
+  }
+
+  function apply_cnot_js(control, target, total_bits) {
+    const dim = 1 << total_bits;
+    const mat = Array(dim).fill().map(() =>
+      Array(dim).fill().map(() => new DeferredCpx())
+    );
+
+    for (let i = 0; i < dim; i++) {
+      const b_ctrl = (i >> (total_bits - 1 - control)) & 1;
+      const flip = (b_ctrl) ? (i ^ (1 << (total_bits - 1 - target))) : i;
+      mat[flip][i] = new DeferredCpx(math.complex(1, 0));
+    }
+
+    return mat;
+  }
+
+  function applyManualCircuit() {
+    const input = document.getElementById("manualCircuitInput").value.trim();
+    if (!input) return alert("請輸入電路內容");
+
+    const gen = parseInt(document.getElementById("genSlider").value);
+    const d = data.find(item => item.gen === gen);
+    const d0 = data0.find(item => item.gen === 1);
+    d0_gen = gen;
+    if (!d) return alert("無對應 generation");
+
+    let newCircuit = [];
+
+    if (input.includes("[") && input.includes("]")) {
+      const matches = [...input.matchAll(/\[([^\]]+)\]/g)];
+      if (matches.length !== d.circuit.length) {
+        return alert(`括號數量 (${matches.length}) 不符合 qubit 數 (${d.circuit.length})`);
+      }
+
+      for (let i = 0; i < matches.length; i++) {
+        const rowStr = matches[i][1];
+        const row = rowStr.trim().split(/\s+/).map(Number);
+        newCircuit.push(row);
+      }
+    }
+    else {
+      const lines = input.split('\n').map(line => line.trim()).filter(line => line !== "");
+      for (let i = 0; i < lines.length; i++) {
+        const row = lines[i].split(/\s+/).map(Number);
+        newCircuit.push(row);
+      }
+    }
+
+    const newQubitCount = newCircuit.length;
+    const newDepth = Math.max(...newCircuit.map(row => row.length));
+
+    d0.circuit = Array.from({ length: newQubitCount }, (_, q) => {
+      const row = newCircuit[q] || [];
+      while (row.length < newDepth) row.push(0);
+      return row;
+    });
+
+    document.getElementById("circuitDepth").value = newDepth;
+    const canvas = document.getElementById("circuitCanvas");
+    canvas.width = leftPadding + newDepth * gateWidth + rightPadding;
+    canvas.height = topPadding + (newQubitCount - 1) * qubitSpacing + bottomPadding;
+
+    renderCircuit(0);
+    updateFitness(d0);
+  }
+
+  function captureMatrix() {
+    const target = document.getElementById('matrix');
+    html2canvas(target).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'matrix_snapshot.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  function downloadCanvas() {
+    const canvas = document.getElementById('circuitCanvas');
+    html2canvas(canvas, {
+      backgroundColor: '#ffffff'
+    }).then(canvasImg => {
+      const link = document.createElement('a');
+      link.download = 'circuit-diagram.png';
+      link.href = canvasImg.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  function copy_circuit() {
+    if (!circuitData) {
+      alert('No circuit to copy!');
+      return;
+    }
+
+    const text = circuitData.map(r => r.join(' ')).join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+      
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      alert('Failed to copy circuit');
+    });
+  }
+
+  function updateCircuitStats(circuit) {
+    const depth = circuit[0].length;
+    const qubits = circuit.length;
+
+    let GC = 0;  // Gate Count
+    let GD = 0;  // Gate Depth
+    let TC = 0;  // T Count
+    let TD = 0;  // T Depth
+
+    for (let d = 0; d < depth; d++) {
+      let hasGate = false;
+      let hasTGate = false;
+      let cnotPairs = [];  // 紀錄 CNOT 是否已經配對過
+
+      for (let q = 0; q < qubits; q++) {
+        const gate = circuit[q][d];
+
+        // 判斷是單一 gate
+        if (gate === 1 || gate === 2 || gate === 3) {
+          hasGate = true;
+          GC++;
+
+          if (gate === 2 || gate === 3) {
+            TC++;
+            hasTGate = true;
+          }
+        }
+
+        // 判斷是否是 CNOT
+        if (gate === 4) { // not
+          // 找對應的 control
+          const ctrlIndex = circuit.findIndex(row => row[d] === 5); // 找control
+
+          if (ctrlIndex !== -1) {
+            const pairKey = `${Math.min(q, ctrlIndex)}-${Math.max(q, ctrlIndex)}-${d}`;
+            if (!cnotPairs.includes(pairKey)) {
+              GC++; // 計算一個 CNOT
+              hasGate = true;
+              cnotPairs.push(pairKey);
+            }
+          }
+        }
+      }
+
+      if (hasGate) GD++;
+      if (hasTGate) TD++;
+    }
+
+    // 更新到畫面
+    document.getElementById('statGC').innerText = GC;
+    document.getElementById('statGD').innerText = GD;
+    document.getElementById('statTC').innerText = TC;
+    document.getElementById('statTD').innerText = TD;
+  }
+  
+  window.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
+
+    document.getElementById("input_file").style.display = "none";
+    document.getElementById("fitnessChartContainer").style.display = "none";
+    document.getElementById("input_circuit_n").style.display = "none";
+    document.getElementById("matrix_show").style.display = "block";
+    document.getElementById("HS_fitness").style.display = "none";
+  });
+
+</script>
+</body>
+</html>
