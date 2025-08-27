@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" content="user-scalable=no">
+<meta charset="UTF-8">
 <title>Quantum Circuit Viewer</title>
 <style>
   * {
@@ -559,6 +559,10 @@
     color: #0f172a;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
+
+  #circuitCanvas, .draggable-gate {
+    touch-action: none; /* 禁止預設的觸控行為 (滾動/縮放) */
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -598,6 +602,8 @@
               <option value="OR">OR</option>
               <option value="Fredkin">Fredkin</option>
               <option value="Permutation">Permutation</option>
+              <option value="Grover3">Grover3</option>
+              <option value="Grover3_global_phase">Grover3_global_phase</option>
               <option value="HHL_50Time">HHL 50 Time Experimental Results</option>
             </select>
           </div>
@@ -2216,6 +2222,57 @@
       }
       ];
     }
+    else if (this.value === "Grover3")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [-0.5, 0,  0.5, 0,  0.5, 0,  0.5, 0],
+          [ 0,   0,  0,   0,  0,   0,  0,   1],
+          [-0.5, 0, -0.5, 0,  0.5, 0, -0.5, 0],
+          [ 0,   0,  0,  -1,  0,   0,  0,   0],
+          [-0.5, 0,  0.5, 0, -0.5, 0, -0.5, 0],
+          [ 0,   0,  0,   0,  0,  -1,  0,   0],
+          [-0.5, 0, -0.5, 0, -0.5, 0,  0.5, 0],
+          [ 0,  -1,  0,   0,  0,   0,  0,   0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[1, 4, 2, 2, 2, 4, 2, 4, 3, 4, 2, 1, 5, 1, 2, 2, 2, 2],
+                  [1, 5, 2, 0, 0, 0, 5, 5, 5, 0, 0, 0, 4, 0, 2, 2, 2, 2],
+                  [0, 0, 0, 0, 0, 5, 4, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 2]],
+        fitness: 0
+      }];
+    }
+    else if (this.value === "Grover3_global_phase")
+    {
+      d0_gen = 0;
+      N = 3;
+      M = 9;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [0.5, 0, -0.5, 0, -0.5, 0, -0.5, 0],
+          [0,   0,  0,   0,  0,   0,  0,  -1],
+          [0.5, 0,  0.5, 0, -0.5, 0,  0.5, 0],
+          [0,   0,  0,   1,  0,   0,  0,   0],
+          [0.5, 0, -0.5, 0,  0.5, 0,  0.5, 0],
+          [0,   0,  0,   0,  0,   1,  0,   0],
+          [0.5, 0,  0.5, 0,  0.5, 0, -0.5, 0],
+          [0,   1,  0,   0,  0,   0,  0,   0]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[4, 3, 3, 3, 3, 1, 5, 3, 5, 3, 4, 5, 3, 4, 3, 4, 1],
+                  [5, 4, 1, 2, 4, 2, 0, 0, 0, 0, 5, 4, 3, 1, 4, 5, 0],
+                  [2, 5, 2, 2, 5, 0, 4, 2, 4, 0, 0, 0, 0, 5, 5, 0, 0]],
+        fitness: 0
+      }];
+    }
+
 
     gates_arrays = {};
     setGatesArray();
