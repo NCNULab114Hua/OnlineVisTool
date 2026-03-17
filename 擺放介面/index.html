@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags for IEEE Xplore immersive article -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="An interactive article on using genetic algorithms to solve the 8-Queens problem. Learn how the choice of representation and operators affects your genetic algorithm.">
+  <meta charset="utf8">
+  <title>Evo-Panel2.0
+  </title>
+
+  <!-- Stylesheet for IEEE Xplore immersive article -->
+  <link rel="stylesheet" href="fonts/stylesheet.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- MathJax javascript library and implementation file/s -->
+  <script type="text/javascript" async
+    src="https://xploreqa.ieee.org/xploreAssets/MathJax-274/MathJax.js?config=default">
+    </script>
+
+  <!-- Example chessboard immersive app -->
+  <script type="text/javascript"
+    src="https://xploreqa.ieee.org/assets/vendor/jquery/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript"
+    src="chessboard/jquery-ui-1.13.2.min.js"></script>
+  <link rel="stylesheet" href="chessboard/jquery-ui.min.css">
+  <link rel="stylesheet" href="chessboard/chessboard.css">
+  <script type="text/javascript" src="chessboard/chessboard.js"></script>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 30px;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    .table-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+    .italic {
+        font-style: italic;
+    }
+    .center {
+        text-align: center;
+    }
+    .grey {
+        color: grey;
+    }
+    sup {
+        font-size: 0.7em;
+        vertical-align: super;
+    }
+    .mid-border {
+        border-bottom: 1px solid black;
+    }
+    .top-border {
+        border-top: 2px solid black;
+    }
+    .makecell {
+        text-align: center;
+        white-space: pre-wrap;
+    }
+    .equation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+    }
+    .equation .formula {
+        flex: 1;
+    }
+    .equation .number {
+        margin-left: 10px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Article with large top spacing -->
+  <article class="mt-lg">
+
+    <!-- Content container with large top spacing -->
+    <div class="container mt-lg">
+      <!-- Anchor ID -->
+
+      <section id="proposed visualization tool">
+
+
+        <div id="sensor-deployment-panel" class="framed">
+          <div class="inside">
+            <!-- 主內容-->
+            <div class="interactive-panel">
+              <!-- Left Clickable Box -->
+              <div id="clickable-box" class="clickable-box"></div>
+      
+              <!-- Status Bar -->
+              <div class="status-bar" id="status-bar"></div>
+      
+              <!-- Right Section -->
+              <div class="dropdown-section">
+                <div>
+                  <label for="solution">Map Size: </label>
+                  <select id="solution">
+                    <option value="1">5 &times; 5 map 1 sensor</option>
+                    <option value="2">10 &times; 10 map 4 sensor</option>
+                    <option value="3">20 &times; 20 map 16 sensor</option>
+                    <option value="4">20 &times; 20 map 12 sensor</option>
+                  </select>
+                </div>
+      
+                <!-- 記�??��? -->
+                <div>Sensor Count: <span id="gbest" class="bold-text"></span></div>
+                <div>Map Check: <span id="map-check" class="bold-text"></span></div>
+                <!-- 標籤 (Legend) -->
+                <div class="label-box">
+                  <div class="sensor-box"></div> : Sensor
+                </div>
+                <div class="label-box">
+                  <div class="dissatisfy-box">
+                    <div class="diagonal-line"></div>
+                  </div>
+                  : Dissatisfy
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script src="./panel/map_model.js"></script>
+        </div>
+
+        <div id="sensor-deployment-50x50panel" class="framed">
+          <div class="inside">
+            <!-- 主內容�?�?-->
+            <div class="interactive-panel-5050">
+              <!-- Left Clickable Box -->
+              <div id="clickable-box-5050" class="clickable-box-5050"></div>
+      
+              <!-- Status Bar -->
+              <div id="status-bar-5050" class="status-bar-5050"></div>
+      
+              <!-- Right Section -->
+              <div class="dropdown-section">
+                <input type="file" id="file-input" accept=".epin" />
+                <div>
+                  <label for="solution"></label>
+                  <select id="solution-5050">
+                    <option value="1">Self-Optimize</option>
+                    <option value="2">Sensor Deployment Process Demo</option>
+                  </select>
+                </div>
+                <!-- 記�??��? -->
+                <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
+                <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
+                <!-- 標籤 (Legend) -->
+                <div class="label-box">
+                  <div class="sensor-box"></div> : Sensor
+                </div>
+                <div class="label-box">
+                  <div class="dissatisfy-box">
+                    <div class="diagonal-line"></div>
+                  </div>
+                  : Dissatisfy
+                </div>
+                <div class="progress-container">
+                  <label for="generation-slider-5050">Gen.(s): </label>
+                  <span id="current-generation-5050">1</span>
+                  <input
+                    type="range"
+                    id="generation-slider-5050"
+                    min="1"
+                    max="100"
+                    value="1"
+                  />
+                </div>
+                <button id="play-pause-btn-5050">Play</button>
+                <div class="speed-control-container">
+                  <button id="speed-up-btn">+</button>
+                  <span id="speed-display">Speed: 1x</span>
+                  <button id="speed-down-btn">-</button>
+                </div>
+                <button id="threshold-btn-5050">Threshold</button>
+                <button id="connect-btn-5050">Connect</button>
+              </div>
+            </div>
+          </div>
+          <script src="./panel/map_model_5050.js"></script>
+        </div>
+
+      </section>
+
+  </article><!-- End of aticle -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var scrollTopBtn = document.querySelector(".scroll-top");
+      window.onscroll = function () { scrollFunction(scrollTopBtn) };
+
+      function scrollFunction(el) {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+          el.style.display = "flex";
+        } else {
+          el.style.display = "none";
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

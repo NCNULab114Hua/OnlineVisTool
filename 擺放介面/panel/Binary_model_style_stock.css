@@ -1,0 +1,326 @@
+/* 僅在 map_model.js 中使用的樣式 */
+body {
+  font-family: Arial, sans-serif;
+}
+.eyebrow {
+  margin-bottom: 10px;
+}
+/* 置中主內容區塊 */
+.interactive-panel-Binary-stock {
+  display: flex;
+  flex-direction: row;      /* 左右排列 */
+  justify-content: center;  /* 水平置中 */
+  align-items: center;      /* 垂直置中 */
+  gap: 5px;                 /* 元素之間的間距 */
+  min-height: 100px;        /* 設定最小高度確保置中效果 */
+}
+/* 左邊的點擊框 */
+.DynVis-box-Binary-stock {
+  width: 900px; /* 黑色大框框寬度固定 */
+  height: 500px; /* 黑色大框框高度固定 */
+  border: 4px solid black; /* 黑色外框 */
+  display: grid; /* 設定為 grid 佈局 */
+  box-sizing: border-box; /* 包含邊框大小 */
+  overflow: hidden; /* 防止溢出 */
+  position: relative;
+}
+
+/* 中間的狀態條 */
+.status-bar-Binary-stock {
+  width: 25px; /* 固定寬度 */
+  height: 500px; /* 固定高度 */
+  background: linear-gradient(to bottom,
+    rgb(198, 0, 0) 0%,          /* 深紅色 */
+    rgb(234, 0, 0) 10%,         /* 紅色 */
+    rgb(255, 29, 0) 20%,        /* 橘紅色 */
+    rgb(255, 125, 0) 30%,       /* 橘色 */
+    rgb(255, 255, 0) 45%,       /* 黃色 */
+    rgb(84, 255, 0) 55%,        /* 綠色 */
+    rgb(0, 255, 130) 60%,       /* 藍綠色 */
+    rgb(0, 255, 255) 67%,       /* 淺藍色 */
+    rgb(0, 95, 255) 80%,        /* 藍色 */
+    rgb(0, 45, 255) 100%        /* 深藍色 */
+  );
+  position: relative;
+  border: 1px solid black;
+  display: inline-block;
+  box-sizing: border-box;
+  margin-left: 20px;
+}
+/* 刻度線 */
+.scale-line {
+  position: absolute;
+  right: 0px; /* 線條出現在右側 */
+  width: 8px; /* 短線條的長度 */
+  height: 1px; /* 線條高度 */
+  background-color: black;
+}
+/* 刻度數字 */
+.status-bar-scale {
+  position: absolute;
+  left: 35px; /* 數字放在 Status Bar 右側 */
+  font-size: 12px;
+  color: black;
+  text-align: center;
+  transform: translateY(-50%); /* 垂直居中對齊 */
+}
+
+/* 下方內容區 */
+.control-panel-stock {
+  display: flex;
+  align-items: center;    /* 元素水平置中 */
+  margin-top: 10px;       /* 與上方地圖保持間距 */
+  margin-left: 40px;      /* 向右移動整體區塊 */
+}
+/* 下方內容區 */
+.button-panel-stock {
+  display: flex;
+  align-items: center;    /* 元素水平置中 */
+  margin-top: 20px;       /* 與上方地圖保持間距 */
+  margin-left: 40px;      /* 向右移動整體區塊 */
+  gap: 10px;
+}
+
+select {
+  padding: 5px;
+}
+
+.label-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 文字排版 */
+.caption {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+#play-pause-btn-Binary-stock {
+  width: 245px; /* 為每個按鈕設定相同的寬度 */
+  margin-right: 10px; /* 按鈕之間的間距 */
+}
+
+
+
+/* 外部進度條容器 (可點擊) */
+.generation-progress-container-stock {
+  position: relative;
+  margin-top: 10px;       /* 與上方地圖保持間距 */
+  margin-left: 40px;      /* 向右移動整體區塊 */
+  width: 900px; /* 設定進度條寬度 */
+  height: 25px; /* 設定進度條高度 */
+  background-color: white; /* 進度條背景白色 */
+  border: 2px solid black; /* 進度條外框 */
+  border-radius: 5px;
+  overflow: hidden; /* 確保內部元素不超出範圍 */
+  display: flex;
+  align-items: center;
+  cursor: pointer; /* 讓滑鼠顯示可點擊 */
+}
+
+/* 綠色進度條 */
+.generation-progress-bar-stock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%; /* 初始寬度為 0% */
+  background: rgb(66, 190, 66); /* 綠色漸變到白色 */
+  transition: width 0.1s ease-in-out; /* 平滑動畫 */
+}
+
+/* 進度條上的文字 */
+.generation-progress-text-stock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 確保文字水平置中 */
+  z-index: 2; /* 讓文字顯示在上層，但不影響點擊 */
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+  pointer-events: none !important; /* 讓文字不影響點擊 */
+  user-select: none; /* 禁止文字選取 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.speed-control-container-stock {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 使內容居中 */
+  gap: 10px; /* 控制按鈕與文字之間的間距 */
+}
+
+.speed-control-container-stock button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#speed-display-Binary {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* 格子的基本樣式 */
+.bit-cell {
+  width: 100%;
+  height: 100%;
+  border: none; /* 取消傳統邊框 */
+}
+
+/* 當前 generation 顯示黑白，並設定外框顏色 */
+.bit-current {
+  background-color: black;
+  box-shadow: 0 0 0 0.5px white; /* 使用 0.5px 白色陰影模擬細邊框 */
+}
+.bit-current-not-selected {
+  background-color: white;
+  box-shadow: 0 0 0 0.5px black;
+}
+
+/* 其他 generations 顯示灰白 */
+.bit-past {
+  background-color: rgb(172, 172, 172);
+  box-shadow: 0 0 0 0.5px white; /* 使用 0.5px 白色陰影模擬細邊框 */
+}
+.bit-past-not-selected {
+  background-color: white;
+  box-shadow: 0 0 0 0.5px rgb(172, 172, 172);
+}
+
+/* 紅白顯示歷史最佳 */
+.bit-best {
+  background-color: red;
+  box-shadow: 0 0 0 0.5px black;
+}
+.bit-best-not-selected {
+  background-color: white;
+  box-shadow: 0 0 0 0.5px black;
+}
+
+/* 最差粒子（藍白） */
+.bit-worst {
+  background-color: blue;
+  box-shadow: 0 0 0 0.5px white;
+}
+
+.current-generation-Binary {
+  display: inline-block;
+  width: 3ch; /* 預留最多 3 位數字的空間 (100) */
+  text-align: right; /* 讓數字靠右對齊，看起來更整齊 */
+}
+
+/* X 軸樣式 */
+.bit-axis {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 40px; /* 預留空間給 Y 軸 */
+  margin-bottom: 5px;
+}
+
+.bit-label {
+  font-size: 12px;
+  text-align: center;
+  flex: 1;
+}
+
+/* Y 軸樣式 */
+.gen-axis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 5px;
+}
+
+.gen-label {
+  font-size: 12px;
+  text-align: right;
+}
+
+#fitness-container-stock {
+  height: 492px;
+}
+#fitness-container-stock div {
+  font-size: 10px;
+  height: 23.5px; /* 與 DynVisBox 格子對齊 */
+  text-align: right;
+}
+
+#y-axis-label-stock {
+  position: absolute;
+  top: -10px; /* 向上移動 */
+  left: -40px; /* 靠左 */
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* X 軸標籤 (Bit - 左上角) */
+#x-axis-label-stock {
+  position: absolute;
+  top: -26px;
+  left: -15px; /* 靠左偏移 */
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Fitness 軸標籤 (Fitness - 右上角) */
+#fitness-axis-label-stock {
+  position: absolute;
+  top: -10px;
+  right: -42px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Fitness 標籤上方的說明 (□ :0  ■ :1) */
+#fitness-color-legend-stock {
+  position: absolute;
+  top: -25px; /* 比 Fitness 再高一點 */
+  right: -42px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap; /* 避免換行 */
+}
+
+.particle-info-overlay-stock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8); /* 半透明白色 */
+  display: flex;
+  justify-content: flex-start; /* 文字靠左 */
+  flex-direction: column;
+  padding-left: 10px; /* 左邊留空間 */
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+  z-index: 10; /* 確保顯示在最上層 */
+  overflow-y: auto; /* 若資訊過多可滾動 */
+  z-index: 10; /* 確保顯示在最上層 */
+  display: none; /* 預設不顯示 */
+  pointer-events: none; /* 讓滑鼠事件穿透 */
+}
+
+.bit-tooltip-stock {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8); /* 黑色半透明 */
+  color: white; /* 白色文字 */
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap; /* 避免換行 */
+  display: none; /* 預設不顯示 */
+  pointer-events: none; /* 讓滑鼠可以穿透 tooltip */
+  z-index: 50; /* 確保顯示在最上層 */
+}

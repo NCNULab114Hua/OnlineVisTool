@@ -1,0 +1,166 @@
+/* 僅在 map_model.js 中使用的樣式 */
+body {
+  font-family: Arial, sans-serif;
+}
+.eyebrow {
+  margin-bottom: 10px;
+}
+/* 置中主內容區塊 */
+.interactive-panel {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  align-items: center;     /* 垂直置中 */
+  gap: 40px;               /* 元素之間的間距 */
+  min-height: 200px;       /* 設定最小高度確保置中效果 */
+}
+/* 左邊的點擊框 */
+.clickable-box {
+  width: 300px; /* 黑色大框框寬度固定 */
+  height: 300px; /* 黑色大框框高度固定 */
+  border: 4px solid black; /* 黑色外框 */
+  display: grid; /* 設定為 grid 佈局 */
+  box-sizing: border-box; /* 包含邊框大小 */
+  overflow: hidden; /* 防止溢出 */
+}
+
+/* 中間的狀態條 */
+.status-bar {
+  width: 30px; /* 固定寬度 */
+  height: 300px; /* 固定高度 */
+  background: linear-gradient(to bottom,
+    rgb(198, 0, 0) 0%,          /* 深紅色 */
+    rgb(234, 0, 0) 10%,         /* 紅色 */
+    rgb(255, 29, 0) 20%,        /* 橘紅色 */
+    rgb(255, 125, 0) 30%,       /* 橘色 */
+    rgb(255, 255, 0) 45%,       /* 黃色 */
+    rgb(84, 255, 0) 55%,        /* 綠色 */
+    rgb(0, 255, 130) 60%,       /* 藍綠色 */
+    rgb(0, 255, 255) 67%,       /* 淺藍色 */
+    rgb(0, 95, 255) 80%,        /* 藍色 */
+    rgb(0, 45, 255) 100%        /* 深藍色 */
+  );
+  position: relative;
+  border: 1px solid black;
+  display: inline-block;
+  box-sizing: border-box;
+}
+/* 刻度線 */
+.scale-line {
+  position: absolute;
+  right: 0px; /* 線條出現在右側 */
+  width: 8px; /* 短線條的長度 */
+  height: 1px; /* 線條高度 */
+  background-color: black;
+}
+/* 刻度數字 */
+.status-bar-scale {
+  position: absolute;
+  left: 35px; /* 數字放在 Status Bar 右側 */
+  font-size: 12px;
+  color: black;
+  text-align: center;
+  transform: translateY(-50%); /* 垂直居中對齊 */
+}
+
+/* 右邊內容區 */
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+select {
+  padding: 5px;
+}
+
+.label-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sensor-box {
+  width: 20px;
+  height: 20px;
+  background-color: black;
+  display: inline-block;
+}
+
+.dissatisfy-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid black; /* 黑色外框 */
+  background: linear-gradient(
+    to bottom left,  /* 左上到右下 */
+    transparent 45%, /* 保留透明部分 */
+    red 50%,         /* 中間紅色線條 */
+    transparent 55%  /* 其餘透明 */
+  );
+  box-sizing: border-box;
+}
+/* 文字排版 */
+.caption {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+/* 基礎格子樣式 */
+.grid-cell {
+  border: 1px solid #ddd; /* 格子邊框 */
+  background-color: white; /* 預設背景 */
+  box-sizing: border-box;
+  cursor: pointer;
+}
+/* 放置 Sensor 的格子 */
+.sensor {
+  background-color: black;
+}
+/* 不符合門檻值的格子 (圖三樣式) */
+.dissatisfy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom left, transparent 45%, red 50%, transparent 55%);
+  pointer-events: none;
+}
+/* 格子內的紅色斜線 */
+.dissatisfy {
+  position: relative;
+}
+/* 滑鼠框框樣式*/
+#tooltip {
+  position: absolute;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  pointer-events: none; /* 避免干擾滑鼠事件 */
+  z-index: 1000;
+  white-space: nowrap; /* 防止換行 */
+}
+
+#x-axis {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr); /* 适配网格大小，20为最大值 */
+  margin-top: 5px; /* 与网格间距 */
+  position: absolute;
+  top: 310px; /* 根据网格动态调整 */
+  left: 30px; /* 与网格左侧对齐 */
+}
+
+#y-axis {
+  display: grid;
+  grid-template-rows: repeat(20, 1fr); /* 适配网格大小，20为最大值 */
+  position: absolute;
+  top: 10px; /* 与网格顶部对齐 */
+  left: -30px; /* 与网格左侧距离 */
+  height: 300px; /* 高度动态适配 */
+  width: 20px; /* 标签宽度 */
+}
