@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     2: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }], // 10 × 10 初始位置
 
-    3: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 12, y: 2 }, { x: 17, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }, { x: 12, y: 7 }, { x: 17, y: 7 }, { x: 2, y: 12 }, { x: 7, y: 12 }, { x: 12, y: 12 }, { x: 17, y: 12 }, { x: 2, y: 17 }, { x: 7, y: 17 }, { x: 12, y: 17 }, { x: 17, y: 17 }], // 20 × 20 初始位置
+    3: [],
 
-    4: [{ x: 3, y: 1 }, { x: 10, y: 2 }, { x: 16, y: 1 }, { x: 3, y: 7 }, { x: 9, y: 7 }, { x: 16, y: 7 }, { x: 3, y: 12 }, { x: 10, y: 12 }, { x: 16, y: 12 }, { x: 3, y: 18 }, { x: 9, y: 17 }, { x: 16, y: 18 }] // 最佳化的 20 × 20 解
+    4: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 12, y: 2 }, { x: 17, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }, { x: 12, y: 7 }, { x: 17, y: 7 }, { x: 2, y: 12 }, { x: 7, y: 12 }, { x: 12, y: 12 }, { x: 17, y: 12 }, { x: 2, y: 17 }, { x: 7, y: 17 }, { x: 12, y: 17 }, { x: 17, y: 17 }], // 20 × 20 初始位置
+
+    5: [{ x: 3, y: 1 }, { x: 10, y: 2 }, { x: 16, y: 1 }, { x: 3, y: 7 }, { x: 9, y: 7 }, { x: 16, y: 7 }, { x: 3, y: 12 }, { x: 10, y: 12 }, { x: 16, y: 12 }, { x: 3, y: 18 }, { x: 9, y: 17 }, { x: 16, y: 18 }] // 最佳化的 20 × 20 解
   };
 
   // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
@@ -368,8 +370,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (selectedValue === 1) gridSize = 5;
     else if (selectedValue === 2) gridSize = 10;
-    else if (selectedValue === 3) gridSize = 20;
-    else if (selectedValue === 4) gridSize = 20; // 最佳化的解 20×20
+    else if (selectedValue === 3) gridSize = 15;
+    else if (selectedValue === 4) gridSize = 20;
+    else if (selectedValue === 5) gridSize = 20; // 最佳化的解 20×20
 
     // 傳入對應的初始 sensor 位置
     renderGrid(gridSize, sensorLayouts[selectedValue] || []);
