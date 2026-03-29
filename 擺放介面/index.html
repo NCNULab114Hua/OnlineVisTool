@@ -1,13 +1,10 @@
 <head>
-  <!-- Required meta tags for IEEE Xplore immersive article -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
     content="An interactive article on using genetic algorithms to solve the 8-Queens problem. Learn how the choice of representation and operators affects your genetic algorithm.">
   <meta charset="utf8">
   <title>Evo-Panel2.0
   </title>
-
-  <!-- Stylesheet for IEEE Xplore immersive article -->
 
   <link rel="stylesheet" href="css/style.css">
 
@@ -151,7 +148,19 @@
                     <option value="2">Sensor Deployment Process Demo</option>
                   </select>
                 </div>
-                <!-- 記�??��? -->
+                <div class="map-size-control" style="margin-top: 10px; margin-bottom: 10px;">
+                  <label for="map-size-input-5050">Map Size:</label>
+                  <input 
+                    type="number" 
+                    id="map-size-input-5050" 
+                    min="1" 
+                    step="1" 
+                    placeholder="輸入大小" 
+                    style="width: 100px;"
+                  />
+                  <button id="set-map-size-btn-5050">Set Size</button>
+                </div>
+                <!-- 地圖資訊 -->
                 <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
                 <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
                 <!-- 標籤 (Legend) -->
@@ -162,7 +171,7 @@
                   <div class="dissatisfy-box">
                     <div class="diagonal-line"></div>
                   </div>
-                  : Dissatisfy
+                  : Unsatisfied
                 </div>
                 <div class="progress-container">
                   <label for="generation-slider-5050">Gen.(s): </label>
@@ -184,6 +193,7 @@
                 <button id="threshold-btn-5050">Threshold</button>
                 <button id="connect-btn-5050">Connect</button>
                 <button id="savemap-btn-5050">Save Map</button>
+
               </div>
             </div>
           </div>
