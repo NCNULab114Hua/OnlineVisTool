@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const speedUpBtn = document.getElementById('speed-up-btn');
   const speedDownBtn = document.getElementById('speed-down-btn');
   const speedDisplay = document.getElementById('speed-display');
+  // 存檔功能
+  const savemapBtn = document.getElementById('savemap-btn-5050');
+  
 
 
   let sensorCount = 0; // 追蹤 sensor 的總數量
@@ -1332,7 +1335,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const label = document.createElement('div');
       label.style.position = 'absolute';
       label.style.top = `${4 + i * cellHeight}px`; // 動態計算每個標籤的位置
-      label.style.left = `20px`; // 固定在 clickableBox 左側
+      label.style.left = `10px`; // 固定在 clickableBox 左側
       label.style.height = `${cellHeight}px`;
       label.style.textAlign = 'right';
       label.style.fontSize = `${fontSize}px`; // 動態設置字體大小
@@ -1716,6 +1719,71 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       clearConnections();
     }
+  });
+  // 保存地圖
+  savemapBtn.addEventListener('click', function () {
+
+    const cells = clickableBox.children; // 取得所有格子
+    const currentSensors = [];
+    
+    // 準備儲存 Limit 資訊的二維陣列 (50x50)
+    const limitMatrix = [];
+    for (let i = 0; i < mapSize; i++) {
+      limitMatrix.push(new Array(mapSize).fill(0));
+    }
+
+    // 1. 遍歷所有的 cell，同時抓取 Limit 與 Sensor 座標
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const x = i % mapSize;
+      const y = Math.floor(i / mapSize);
+      
+      // 【讀取 Limit】
+      // 優先從 dataset 讀取 data-limit，或從自訂屬性讀取 limit。若真的都沒抓到，預設給 0.3 避免破圖
+      const limitVal = cell.dataset.limit || cell.getAttribute('limit') || "0.3";
+      limitMatrix[y][x] = limitVal; // 將抓取到的 limit 填入對應的 y 列 x 行
+
+      // 【讀取 Sensor】
+      if (cell.classList.contains('sensor')) {
+        currentSensors.push({ x: x, y: y });
+      }
+    }
+
+    // 2. 開始組合要寫入檔案的內容
+    let outputChunks = [];
+    outputChunks.push(`Map :\n${mapSize}x${mapSize}`);
+    outputChunks.push(`Sensing_range : ${sensingRange}`);
+    outputChunks.push(`Connect : ${connectDistance}`);
+
+    // 3. 寫入 Limit 矩陣區塊
+    outputChunks.push(`Limit :`);
+    limitMatrix.forEach(row => {
+      // 把每一列的 limit 數字用空白隔開，然後加入輸出字串
+      outputChunks.push(row.join(' '));
+    });
+
+    // 4. 只輸出一代 (當前畫面)，標記為第 1 代
+    outputChunks.push(`Generation :`);
+    const formattedSensors = `[${currentSensors.map(s => `{x: ${s.x}, y: ${s.y}}`).join(', ')}]`;
+    outputChunks.push(`*1 ${formattedSensors}`);
+
+    // 5. 封裝檔案並觸發下載
+    const finalContent = outputChunks.join('\n');
+    const blob = new Blob([finalContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `map_sensor_status.epin`; // 輸出的檔名
+    document.body.appendChild(a);
+    a.click();
+    
+    // 清理瀏覽器產生的虛擬連結
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+
   });
   // 檔案讀取
   fileInput.addEventListener('change', function (event) {
