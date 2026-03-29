@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const speedDisplay = document.getElementById('speed-display');
   // 存檔功能
   const savemapBtn = document.getElementById('savemap-btn-5050');
+  // 自訂map大小
+  const mapSizeInput = document.getElementById('map-size-input-5050');
+  const setMapSizeBtn = document.getElementById('set-map-size-btn-5050');
   
 
 
@@ -1304,7 +1307,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const cellWidth = boxWidth / gridSize;
     const cellHeight = boxHeight / gridSize;
 
-    let fontSize = Math.min(cellWidth, cellHeight) * 0.7; // 字體大小為格子大小的 70%
+    // 1. 固定字體大小 (你可以依需求修改這裡的數字，例如 12px 或 16px)
+    const fixedFontSize = '12px';
 
     // 清空 X 和 Y 軸內容
     xAxis.innerHTML = '';
@@ -1314,11 +1318,11 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < gridSize; i++) {
       const label = document.createElement('div');
       label.style.position = 'absolute';
-      label.style.top = `5px`; // 固定在網格正下方
+      label.style.top = `-1px`;
       label.style.left = `${8 + i * cellWidth}px`; // 動態計算每個標籤的位置
       label.style.width = `${cellWidth}px`;
       label.style.textAlign = 'center';
-      label.style.fontSize = `${fontSize}px`; // 動態設置字體大小
+      label.style.fontSize = fixedFontSize; // 動態設置字體大小
 
       // 每 5 格顯示一次標籤
       if (i % 5 === 0) {
@@ -1335,10 +1339,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const label = document.createElement('div');
       label.style.position = 'absolute';
       label.style.top = `${4 + i * cellHeight}px`; // 動態計算每個標籤的位置
-      label.style.left = `10px`; // 固定在 clickableBox 左側
+      label.style.left = `2px`;
       label.style.height = `${cellHeight}px`;
       label.style.textAlign = 'right';
-      label.style.fontSize = `${fontSize}px`; // 動態設置字體大小
+      label.style.fontSize = fixedFontSize; // 動態設置字體大小
       label.style.lineHeight = `${cellHeight}px`; // 垂直置中
 
       // 每 5 格顯示一次標籤
@@ -1847,5 +1851,32 @@ document.addEventListener('DOMContentLoaded', function () {
         startPlayback(); // 使用新的速度重新啟動播放
       }
     }
+  });
+  // 當按下 "Set Size" 按鈕時觸發
+  setMapSizeBtn.addEventListener('click', function() {
+    // 1. 取得並驗證輸入的值
+    const newSize = parseInt(mapSizeInput.value, 10);
+    
+    if (isNaN(newSize) || newSize <= 0) {
+      alert("請輸入有效的正整數！(例如: 5)");
+      return;
+    }
+
+    // 2. 更新全域變數參數
+    mapSize = newSize;
+    connectDistance = 5;       // Connect 變成 5
+    sensingRange = 5;          // 如果你有需要重設 sensing range 也可以加在這裡
+    
+    // 3. 重設 limitThreshold 陣列，使其變成 newSize x newSize 大小，且全部填滿 0.3
+    limitThreshold = [];
+    for (let i = 0; i < mapSize; i++) {
+      limitThreshold.push(new Array(mapSize).fill(0.3));
+    }
+
+    // 4. 重置 sensor (傳入空的代數資料，視你的 updateMap 接收格式，通常是空陣列或空物件)
+    generations = []; // 或是 {} 依你原本的格式為主
+
+    // 5. 直接呼叫你的 updateMap 函數重新渲染畫面！
+    updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
   });
 });
