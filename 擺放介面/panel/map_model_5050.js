@@ -1778,7 +1778,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `map_sensor_status.epin`; // 輸出的檔名
+    a.download = `MapOutput.epin`; // 輸出的檔名
     document.body.appendChild(a);
     a.click();
     
