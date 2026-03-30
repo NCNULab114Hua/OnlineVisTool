@@ -166,7 +166,7 @@ select {
   height: 300px; /* 高度动态适配 */
   width: 20px; /* 标签宽度 */
 }
-
+  
 /* 連線線條樣式 */
 .connection-line {
   position: absolute;

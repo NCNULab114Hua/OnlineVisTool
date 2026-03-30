@@ -1917,7 +1917,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // console.log("已經是最初狀態，沒有上一步可以復原了！");
       return; // 結束執行
     }
-    
+      
     // 拿出上一個狀態 (這會把陣列最後一個元素移除並回傳)
     const previousState = historyStack.pop();
     
