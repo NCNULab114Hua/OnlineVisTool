@@ -176,8 +176,13 @@ select {
   pointer-events: none; /* 防止影響點擊事件 */
 }
 
-#threshold-btn-5050, #connect-btn-5050, #play-pause-btn-5050, #savemap-btn-5050 {
-  width: 245px; /* 為每個按鈕設定相同的寬度 */
+#threshold-btn-5050, #connect-btn-5050, #savemap-btn-5050, #undo-btn-5050 {
+  width: 122px; /* 為每個按鈕設定相同的寬度 */
+  margin-right: 10px; /* 按鈕之間的間距 */
+}
+
+#play-pause-btn-5050 {
+  width: 81px; /* 為每個按鈕設定相同的寬度 */
   margin-right: 10px; /* 按鈕之間的間距 */
 }
 

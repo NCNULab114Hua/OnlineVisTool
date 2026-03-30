@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // 自訂map大小
   const mapSizeInput = document.getElementById('map-size-input-5050');
   const setMapSizeBtn = document.getElementById('set-map-size-btn-5050');
+  // 取得 Undo 回到上一步按鈕
+  const undoBtn = document.getElementById('undo-btn-5050');
   
 
 
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let generations = {}; // 儲存每一代的感測器位置
   const sensors = []; // 儲存所有 sensor 位置
   let probabilitiesCache = null; // 儲存機率狀態
+  let historyStack = []; // 宣告歷史紀錄 Stack
 
   //初始sensor擺放位置
   const sensorLayouts = {
@@ -1238,6 +1241,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // 點擊事件：添加/移除 sensor
       cell.addEventListener('click', function () {
+        // 【重要】在狀態改變前，先存檔目前的狀態！
+        saveMapState();
+
         // 點擊邏輯：添加/移除 sensor
         if (cell.classList.contains('sensor')) {
           cell.classList.remove('sensor');
@@ -1665,6 +1671,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 更新地圖大小和格子配置
     gridSize = mapSize; // 更新全域變數
+    historyStack = []; // 清空上一步紀錄
     renderGrid(gridSize, generations[0] || []); // 預設顯示第一代感測器擺放位置
   }
   // 更新進度條的值和顯示的 generation 數
@@ -1688,6 +1695,31 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, 1000 / playbackSpeed); // 根據速度倍率調整間隔
   }
+  // 2. 儲存當前 Map 狀態的 function
+  function saveMapState() {
+    const cells = clickableBox.children;
+    const currentState = [];
+    
+    // 掃描所有格子，把有 sensor 的格子轉換成 x, y 座標存起來
+    for (let i = 0; i < cells.length; i++) {
+      if (cells[i].classList.contains('sensor')) {
+        // 透過 index 計算出 x 和 y 的座標
+        const x = i % mapSize;
+        const y = Math.floor(i / mapSize);
+        
+        // 【關鍵修改】改成存入 {x, y} 物件，這樣才跟 generations 的資料一樣！
+        currentState.push({ x: x, y: y }); 
+      }
+    }
+    
+    // 把這個狀態推入歷史紀錄中
+    historyStack.push(currentState);
+    
+    // 限制最多只記 50 步，避免記憶體佔用過大
+    if (historyStack.length > 50) {
+      historyStack.shift(); 
+    }
+  }
   // 根據選項更新格子
   solutionDropdown.addEventListener('change', function () {
     const selectedValue = parseInt(this.value);
@@ -1709,7 +1741,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 切換threshold / detection probability 模式
   thresholdBtn.addEventListener('click', function () {
     isThresholdMode = !isThresholdMode;
-    thresholdBtn.textContent = isThresholdMode ? 'Detection Probability' : 'Threshold';
+    thresholdBtn.textContent = isThresholdMode ? 'Coverage' : 'Threshold';
 
     applyProbabilitiesToGrid(probabilitiesCache, clickableBox);
   });
@@ -1878,5 +1910,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 5. 直接呼叫你的 updateMap 函數重新渲染畫面！
     updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
+  });
+  undoBtn.addEventListener('click', function() {
+    // 檢查是否還有歷史紀錄
+    if (historyStack.length === 0) {
+      // console.log("已經是最初狀態，沒有上一步可以復原了！");
+      return; // 結束執行
+    }
+    
+    // 拿出上一個狀態 (這會把陣列最後一個元素移除並回傳)
+    const previousState = historyStack.pop();
+    
+    // 同步更新畫面上顯示的 Sensor Count
+    updateGrid(previousState || []); // 更新格子資訊
   });
 });
