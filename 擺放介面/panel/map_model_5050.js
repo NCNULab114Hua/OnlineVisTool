@@ -1383,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', function () {
       cell.classList.add('sensor'); // 標記為感測器
       sensorCount++;
       sensors.push(sensor);
-      cell.style.backgroundColor = 'black'; // 更新顏色
+      //cell.style.backgroundColor = '#E2C6C4'; // 更新顏色
     });
 
     // 更新 Gbest 顯示
@@ -1458,7 +1458,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // 更新格子樣式
       if (cell.classList.contains('sensor')) {
         // 如果是 sensor，顏色保持黑色
-        cell.style.backgroundColor = 'black';
+        cell.style.backgroundColor = '#E2C6C4';
         cell.classList.remove('dissatisfy'); // 移除紅色斜線
       } else {
         const probability = probabilities[index];
@@ -1490,10 +1490,10 @@ document.addEventListener('DOMContentLoaded', function () {
       { stop: 0.4, r: 0, g: 255, b: 130 },    // 藍綠色
       { stop: 0.45, r: 84, g: 255, b: 0 },     // 綠色
       { stop: 0.55, r: 255, g: 255, b: 0 },    // 黃色
-      { stop: 0.7, r: 255, g: 125, b: 0 },    // 橘色
-      { stop: 0.8, r: 255, g: 29, b: 0 },     // 橘紅色
-      { stop: 0.9, r: 234, g: 0, b: 0 },      // 紅色
-      { stop: 1.0, r: 198, g: 0, b: 0 }       // 深紅色
+      { stop: 0.75, r: 255, g: 125, b: 0 },    // 橘色
+      //{ stop: 0.9, r: 255, g: 29, b: 0 },     // 橘紅色
+      { stop: 1.0, r: 234, g: 0, b: 0 },      // 紅色
+      //{ stop: 1.0, r: 198, g: 0, b: 0 }       // 深紅色
     ];
 
     // 遍歷顏色區間，找到當前機率所在範圍
@@ -1913,6 +1913,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 5. 直接呼叫你的 updateMap 函數重新渲染畫面！
     updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
   });
+  // 返回上一步的按鈕
   undoBtn.addEventListener('click', function() {
     // 檢查是否還有歷史紀錄
     if (historyStack.length === 0) {

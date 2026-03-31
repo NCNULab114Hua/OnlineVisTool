@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     2: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }], // 10 × 10 初始位置
 
-    3: [],
+    3: [{x: 2, y: 2}, {x: 7, y: 2}, {x: 12, y: 2}, {x: 2, y: 7}, {x: 7, y: 7}, {x: 12, y: 7}, {x: 2, y: 12}, {x: 7, y: 12}, {x: 12, y: 12}],
 
     4: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 12, y: 2 }, { x: 17, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }, { x: 12, y: 7 }, { x: 17, y: 7 }, { x: 2, y: 12 }, { x: 7, y: 12 }, { x: 12, y: 12 }, { x: 17, y: 12 }, { x: 2, y: 17 }, { x: 7, y: 17 }, { x: 12, y: 17 }, { x: 17, y: 17 }], // 20 × 20 初始位置
 
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
     grid.childNodes.forEach((cell, index) => {
       if (cell.classList.contains('sensor')) {
         // 如果是 sensor，顏色保持黑色
-        cell.style.backgroundColor = 'black';
+        cell.style.backgroundColor = '#E2C6C4';
         cell.classList.remove('dissatisfy'); // 移除紅色斜線
       } else {
         const probability = probabilities[index];
@@ -323,10 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
       { stop: 0.4, r: 0, g: 255, b: 130 },    // 藍綠色
       { stop: 0.45, r: 84, g: 255, b: 0 },     // 綠色
       { stop: 0.55, r: 255, g: 255, b: 0 },    // 黃色
-      { stop: 0.7, r: 255, g: 125, b: 0 },    // 橘色
-      { stop: 0.8, r: 255, g: 29, b: 0 },     // 橘紅色
-      { stop: 0.9, r: 234, g: 0, b: 0 },      // 紅色
-      { stop: 1.0, r: 198, g: 0, b: 0 }       // 深紅色
+      { stop: 0.75, r: 255, g: 125, b: 0 },    // 橘色
+      //{ stop: 0.9, r: 255, g: 29, b: 0 },     // 橘紅色
+      { stop: 1.0, r: 234, g: 0, b: 0 },      // 紅色
+      //{ stop: 1.0, r: 198, g: 0, b: 0 }       // 深紅色
     ];
 
     // 遍歷顏色區間，找到當前機率所在範圍

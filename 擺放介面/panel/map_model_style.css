@@ -28,10 +28,10 @@ body {
   width: 30px; /* 固定寬度 */
   height: 300px; /* 固定高度 */
   background: linear-gradient(to bottom,
-    rgb(198, 0, 0) 0%,          /* 深紅色 */
-    rgb(234, 0, 0) 10%,         /* 紅色 */
-    rgb(255, 29, 0) 20%,        /* 橘紅色 */
-    rgb(255, 125, 0) 30%,       /* 橘色 */
+    /*rgb(198, 0, 0) 0%,*/          /* 深紅色 */
+    rgb(234, 0, 0) 0%,         /* 紅色 */
+    /*rgb(255, 29, 0) 10%,*/        /* 橘紅色 */
+    rgb(255, 125, 0) 25%,       /* 橘色 */
     rgb(255, 255, 0) 45%,       /* 黃色 */
     rgb(84, 255, 0) 55%,        /* 綠色 */
     rgb(0, 255, 130) 60%,       /* 藍綠色 */
@@ -81,8 +81,12 @@ select {
 .sensor-box {
   width: 20px;
   height: 20px;
-  background-color: black;
-  display: inline-block;
+  background-color: #E2C6C4; /* 強制覆蓋原有顏色 */
+  background-image: url('../image/signal.svg');  /* 放入圖片 */
+  background-size: 90%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid black;
 }
 
 .dissatisfy-box {
@@ -115,7 +119,11 @@ select {
 }
 /* 放置 Sensor 的格子 */
 .sensor {
-  background-color: black;
+  background-color: #E2C6C4; /* 強制覆蓋原有顏色 */
+  background-image: url('../image/signal.svg');  /* 放入圖片 */
+  background-size: contain;                 /* 讓圖標稍微小一點點，看起來更精緻 */
+  background-position: center;
+  background-repeat: no-repeat;
 }
 /* 不符合門檻值的格子 (圖三樣式) */
 .dissatisfy::after {
