@@ -15,8 +15,7 @@
 
   <style>
     body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
+        padding: 0;
     }
     table {
         border-collapse: collapse;
@@ -75,141 +74,177 @@
 </head>
 
 <body>
-  <!-- Article with large top spacing -->
   <article class="mt-lg">
-
-    <!-- Content container with large top spacing -->
     <div class="container mt-lg">
-      <!-- Anchor ID -->
+      <header class="page-hero">
+        <div class="hero-copy">
+          <span class="hero-kicker">Mission Map Lab</span>
+          <h1>Play, Place, and Help Discover Better Map Layouts</h1>
+          <p class="hero-description">
+            This is a map placement game for young explorers. Every time players try a new layout, they are also helping us learn more about better placement strategies.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-chip">
+            <span class="chip-label">Experience</span>
+            <strong>Kid-Friendly Research Game</strong>
+          </div>
+          <div class="hero-chip">
+            <span class="chip-label">Mission</span>
+            <strong>Build Smart and Helpful Layouts</strong>
+          </div>
+        </div>
+      </header>
 
       <section id="proposed visualization tool">
+        <div class="panel-showcase">
+          <div class="panel-heading">
+            <span class="panel-tag">Starter Missions</span>
+            <h2>Try a Quick Challenge</h2>
+            <p>Start with simple maps, test different placements, and see how well your layout protects the whole area.</p>
+          </div>
 
+          <div id="sensor-deployment-panel" class="framed">
+            <div class="inside">
+              <div class="interactive-panel">
+                <div id="clickable-box" class="clickable-box"></div>
 
-        <div id="sensor-deployment-panel" class="framed">
-          <div class="inside">
-            <!-- 主內容-->
-            <div class="interactive-panel">
-              <!-- Left Clickable Box -->
-              <div id="clickable-box" class="clickable-box"></div>
-      
-              <!-- Status Bar -->
-              <div class="status-bar" id="status-bar"></div>
-      
-              <!-- Right Section -->
-              <div class="dropdown-section">
-                <div>
-                  <label for="solution">Map Size: </label>
-                  <select id="solution">
-                    <option value="1">5 &times; 5 map 1 sensor</option>
-                    <option value="2">10 &times; 10 map 4 sensor</option>
-                    <option value="3">15 &times; 15 map 9 sensor</option>
-                    <option value="4">20 &times; 20 map 16 sensor</option>
-                    <option value="5">20 &times; 20 map 12 sensor</option>
-                  </select>
-                </div>
-      
-                <!-- 紀錄map狀態 -->
-                <div>Sensor Count: <span id="gbest" class="bold-text"></span></div>
-                <div>Map Check: <span id="map-check" class="bold-text"></span></div>
-                <!-- 標籤 (Legend) -->
-                <div class="label-box">
-                  <div class="sensor-box"></div> : Sensor
-                </div>
-                <div class="label-box">
-                  <div class="dissatisfy-box">
-                    <div class="diagonal-line"></div>
+                <div class="status-bar" id="status-bar"></div>
+
+                <div class="dropdown-section">
+                  <div class="tool-block">
+                    <label for="solution">Choose a Mission Map</label>
+                    <select id="solution">
+                      <option value="1">5 &times; 5 map 1 sensor</option>
+                      <option value="2">10 &times; 10 map 4 sensor</option>
+                      <option value="3">15 &times; 15 map 9 sensor</option>
+                      <option value="4">20 &times; 20 map 16 sensor</option>
+                      <option value="5">20 &times; 20 map 12 sensor</option>
+                    </select>
                   </div>
-                  : Unsatisfied
+
+                  <div class="stat-grid">
+                    <div class="stat-card">Tools Placed: <span id="gbest" class="bold-text"></span></div>
+                    <div class="stat-card">Mission Progress: <span id="map-check" class="bold-text"></span></div>
+                  </div>
+
+                  <div class="legend-group">
+                    <div class="label-box">
+                      <div class="sensor-box"></div> : Placed Tool
+                    </div>
+                    <div class="label-box">
+                      <div class="dissatisfy-box">
+                        <div class="diagonal-line"></div>
+                      </div>
+                      : Needs Help
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <script src="./panel/map_model.js"></script>
+            <script src="./panel/map_model.js"></script>
+          </div>
         </div>
 
-        <div id="sensor-deployment-50x50panel" class="framed">
-          <div class="inside">
-            <!-- 主內容�?�?-->
-            <div class="interactive-panel-5050">
-              <!-- Left Clickable Box -->
-              <div id="clickable-box-5050" class="clickable-box-5050"></div>
-      
-              <!-- Status Bar -->
-              <div id="status-bar-5050" class="status-bar-5050"></div>
-      
-              <!-- Right Section -->
-              <div class="dropdown-section">
-                <input type="file" id="file-input" accept=".epin" />
-                <div>
-                  <label for="solution"></label>
-                  <select id="solution-5050">
-                    <option value="1">Self-Optimize</option>
-                    <option value="2">59 sensors map</option>
-                    <option value="3">58 sensors map</option>
-                    <option value="4">Sensor Deployment Process Demo</option>
-                  </select>
-                </div>
-                <div class="map-size-control" style="margin-top: 10px; margin-bottom: 10px;">
-                  <label for="map-size-input-5050">Map Size:</label>
-                  <input 
-                    type="number" 
-                    id="map-size-input-5050" 
-                    min="1" 
-                    step="1" 
-                    placeholder="輸入大小" 
-                    style="width: 100px;"
-                  />
-                  <button id="set-map-size-btn-5050">Set Size</button>
-                </div>
-                <!-- 地圖資訊 -->
-                <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
-                <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
-                <!-- 標籤 (Legend) -->
-                <div class="label-box">
-                  <div class="sensor-box"></div> : Sensor
-                </div>
-                <div class="label-box">
-                  <div class="dissatisfy-box">
-                    <div class="diagonal-line"></div>
+        <div class="panel-showcase">
+          <div class="panel-heading">
+            <span class="panel-tag">Explorer Missions</span>
+            <h2>Build Your Own Big Map Strategy</h2>
+            <p>Challenge yourself with larger maps, explore more placement ideas, and help us discover strong solutions through play.</p>
+          </div>
+
+          <div id="sensor-deployment-50x50panel" class="framed">
+            <div class="inside">
+              <div class="interactive-panel-5050">
+                <div id="clickable-box-5050" class="clickable-box-5050"></div>
+
+                <div id="status-bar-5050" class="status-bar-5050"></div>
+
+                <div class="dropdown-section">
+                  <div class="tool-block">
+                    <label for="file-input">Load Mission File</label>
+                    <input type="file" id="file-input" accept=".epin" />
                   </div>
-                  : Unsatisfied
+
+                  <div class="tool-block">
+                    <label for="solution-5050">Choose a Challenge</label>
+                    <select id="solution-5050">
+                      <option value="1">Self-Optimize</option>
+                      <option value="2">59 sensors map</option>
+                      <option value="3">58 sensors map</option>
+                      <option value="4">Sensor Deployment Process Demo</option>
+                    </select>
+                  </div>
+
+                  <div class="map-size-control tool-block">
+                    <label for="map-size-input-5050">Set Map Size</label>
+                    <div class="control-inline">
+                      <input
+                        type="number"
+                        id="map-size-input-5050"
+                        min="1"
+                        step="1"
+                        placeholder="Enter size"
+                      />
+                      <button id="set-map-size-btn-5050">Set Size</button>
+                    </div>
+                  </div>
+
+                  <div class="stat-grid">
+                    <div class="stat-card">Tools Placed: <span id="gbest-5050" class="bold-text"></span></div>
+                    <div class="stat-card">Mission Progress: <span id="map-check-5050" class="bold-text"></span></div>
+                  </div>
+
+                  <div class="legend-group">
+                    <div class="label-box">
+                      <div class="sensor-box"></div> : Placed Tool
+                    </div>
+                    <div class="label-box">
+                      <div class="dissatisfy-box">
+                        <div class="diagonal-line"></div>
+                      </div>
+                      : Needs Help
+                    </div>
+                  </div>
+
+                  <div class="progress-container tool-block">
+                    <label for="generation-slider-5050">Round: </label>
+                    <span id="current-generation-5050">1</span>
+                    <input
+                      type="range"
+                      id="generation-slider-5050"
+                      min="1"
+                      max="100"
+                      value="1"
+                    />
+                  </div>
+
+                  <div class="button-row compact-row speed-row">
+                    <button id="play-pause-btn-5050" class="action-button">Play</button>
+                    <button id="speed-up-btn" class="action-button icon-only" aria-label="Speed Up"></button>
+                    <span id="speed-display">Speed: 1x</span>
+                    <button id="speed-down-btn" class="action-button icon-only" aria-label="Speed Down"></button>
+                  </div>
+
+                  <div class="button-row">
+                    <button id="threshold-btn-5050" class="action-button">Threshold</button>
+                    <button id="connect-btn-5050" class="action-button">Connect</button>
+                  </div>
+
+                  <div class="button-row">
+                    <button id="undo-btn-5050" class="action-button">Undo</button>
+                    <button id="savemap-btn-5050" class="action-button">Save Map</button>
+                  </div>
                 </div>
-                <div class="progress-container">
-                  <label for="generation-slider-5050">Gen.(s): </label>
-                  <span id="current-generation-5050">1</span>
-                  <input
-                    type="range"
-                    id="generation-slider-5050"
-                    min="1"
-                    max="100"
-                    value="1"
-                  />
-                </div>
-                <div style="display: flex; gap: 10px;">
-                  <button id="play-pause-btn-5050">Play</button>
-                  <button id="speed-up-btn">+</button>
-                  <span id="speed-display">Speed: 1x</span>
-                  <button id="speed-down-btn">-</button>
-                </div>
-                <div>
-                  <button id="threshold-btn-5050">Threshold</button>
-                  <button id="connect-btn-5050">Connect</button>
-                </div>
-                <div>
-                  <button id="undo-btn-5050">Undo</button>
-                  <button id="savemap-btn-5050">Save Map</button>
-                </div>
-                
               </div>
             </div>
+            <script src="./panel/map_model_5050.js"></script>
           </div>
-          <script src="./panel/map_model_5050.js"></script>
         </div>
-
       </section>
-
-  </article><!-- End of aticle -->
+    </div>
+  </article>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
