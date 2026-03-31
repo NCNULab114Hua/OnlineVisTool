@@ -1,148 +1,140 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // 動態引入 CSS
+  // 載入大型地圖面板專用樣式。
+
   const cssLink = document.createElement('link');
   cssLink.rel = 'stylesheet';
   cssLink.href = './panel/map_model_5050_style.css';
   document.head.appendChild(cssLink);
 
-  // 其他邏輯
+  // 主要 DOM 節點快取。
   const clickableBox = document.getElementById('clickable-box-5050');
   const solutionDropdown = document.getElementById('solution-5050');
   const statusBar = document.getElementById('status-bar-5050');
   const gbestDisplay = document.getElementById('gbest-5050');
   const mapCheck = document.getElementById('map-check-5050');
-  // 讀檔功能
+
   const fileInput = document.getElementById('file-input');
-  // 看threshold功能
+
   const thresholdBtn = document.getElementById('threshold-btn-5050');
-  // 連線功能
+
   const connectBtn = document.getElementById('connect-btn-5050');
-  //播放暫停
+
   const playPauseBtn = document.getElementById('play-pause-btn-5050');
-  // 獲取進度條和顯示的元素
+
   const generationSlider = document.getElementById('generation-slider-5050');
   const currentGenerationDisplay = document.getElementById('current-generation-5050');
-  // 加減速功能
+
   const speedUpBtn = document.getElementById('speed-up-btn');
   const speedDownBtn = document.getElementById('speed-down-btn');
   const speedDisplay = document.getElementById('speed-display');
-  // 存檔功能
+
   const savemapBtn = document.getElementById('savemap-btn-5050');
-  // 自訂map大小
+
   const mapSizeInput = document.getElementById('map-size-input-5050');
   const setMapSizeBtn = document.getElementById('set-map-size-btn-5050');
-  // 取得 Undo 回到上一步按鈕
+
   const undoBtn = document.getElementById('undo-btn-5050');
   
 
-
-  let sensorCount = 0; // 追蹤 sensor 的總數量
-  let gridSize = 50; // 初始 Grid 大小
+  // 主要狀態：地圖尺寸、播放狀態與機率快取。
+  let sensorCount = 0;
+  let gridSize = 50;
   let mapSize = 50;
-  let sensingRange = 5; // 預設感測範圍
-  let connectDistance = 8; // 預設連線距離
-  let limitThreshold = []; // 儲存 threshold 資訊
-  let generations = {}; // 儲存每一代的感測器位置
-  const sensors = []; // 儲存所有 sensor 位置
-  let probabilitiesCache = null; // 儲存機率狀態
-  let historyStack = []; // 宣告歷史紀錄 Stack
+  let sensingRange = 5;
+  let connectDistance = 8;
+  let limitThreshold = [];
+  let generations = {};
+  const sensors = [];
+  let probabilitiesCache = null;
+  let historyStack = [];
 
-  //初始sensor擺放位置
+  // 預設情境：提供幾組大型地圖配置。
   const sensorLayouts = {
-    1: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }], // 50 × 50 找到的最佳解
+    1: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }],
     2: [{ x: 17, y: 0 }, { x: 9, y: 1 }, { x: 35, y: 1 }, { x: 2, y: 2 }, { x: 42, y: 2 }, { x: 23, y: 3 }, { x: 29, y: 3 }, { x: 48, y: 3 }, { x: 16, y: 6 }, { x: 9, y: 8 }, { x: 35, y: 8 }, { x: 2, y: 9 }, { x: 28, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 21, y: 11 }, { x: 16, y: 13 }, { x: 9, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 26, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 18, y: 19 }, { x: 10, y: 21 }, { x: 2, y: 23 }, { x: 31, y: 23 }, { x: 38, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 30, y: 29 }, { x: 46, y: 29 }, { x: 1, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 38, y: 33 }, { x: 7, y: 35 }, { x: 30, y: 35 }, { x: 46, y: 35 }, { x: 1, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 32, y: 40 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }],
     3: [{ x: 2, y: 2 }, { x: 9, y: 2 }, { x: 16, y: 2 }, { x: 23, y: 2 }, { x: 30, y: 2 }, { x: 42, y: 2 }, { x: 36, y: 3 }, { x: 48, y: 3 }, { x: 30, y: 8 }, { x: 2, y: 9 }, { x: 9, y: 9 }, { x: 16, y: 9 }, { x: 23, y: 9 }, { x: 41, y: 10 }, { x: 47, y: 10 }, { x: 36, y: 11 }, { x: 30, y: 15 }, { x: 2, y: 16 }, { x: 9, y: 16 }, { x: 16, y: 16 }, { x: 23, y: 16 }, { x: 47, y: 17 }, { x: 41, y: 18 }, { x: 34, y: 19 }, { x: 3, y: 22 }, { x: 11, y: 22 }, { x: 19, y: 22 }, { x: 27, y: 22 }, { x: 46, y: 23 }, { x: 39, y: 26 }, { x: 32, y: 27 }, { x: 3, y: 28 }, { x: 11, y: 28 }, { x: 18, y: 28 }, { x: 25, y: 28 }, { x: 46, y: 29 }, { x: 39, y: 33 }, { x: 3, y: 34 }, { x: 10, y: 34 }, { x: 18, y: 34 }, { x: 26, y: 34 }, { x: 33, y: 34 }, { x: 46, y: 35 }, { x: 2, y: 40 }, { x: 9, y: 40 }, { x: 16, y: 40 }, { x: 23, y: 40 }, { x: 31, y: 40 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 29, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 16, y: 47 }, { x: 23, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }],
-    4: [{ x: 2, y: 2 }] // 50 × 50 測試用初始解
+    4: [{ x: 2, y: 2 }]
   };
 
-  // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
   const threshold = 0.3;
 
-  //功能按鈕
-  // 判斷是否為 Threshold 模式
+  // 模式開關：門檻檢視、連線檢視與播放控制。
   let isThresholdMode = false; 
-  // 判斷是否處於 Connect 模式
+
   let isConnectMode = false; 
-  let connectionLines = []; // 儲存所有連線元素
-  // 判斷是否處於播放狀態
+  let connectionLines = [];
+
   let isPlaying = false; 
-  let currentGeneration = 0; // 當前播放的代數
-  let playInterval; // 播放的計時器
-  // 初始化進度條的最大值
+  let currentGeneration = 0;
+  let playInterval;
+
   generationSlider.max = Object.keys(generations).length;
-  // 加減速功能變數
-  let playbackSpeed = 1; // 默認速度倍率
-  const maxSpeed = 4; // 最大速度倍率
-  const minSpeed = 1; // 最小速度倍率
 
-  // 清空狀態條內部
+  let playbackSpeed = 1;
+  const maxSpeed = 4;
+  const minSpeed = 1;
+
   statusBar.innerHTML = '';
-  // 生成 0~1 的刻度，每間隔 0.1
-  for (let i = 0; i <= 10; i++) {
-    const value = (1 - i / 10).toFixed(1); // 倒序顯示 1 -> 0
+  // 建立右側色條刻度。
 
-    // 刻度線
+  for (let i = 0; i <= 10; i++) {
+    const value = (1 - i / 10).toFixed(1);
+
     const scaleLine = document.createElement('div');
     scaleLine.classList.add('scale-line');
     scaleLine.style.top = `${(i / 10) * 100}%`;
 
-    // 刻度數字
     const scaleText = document.createElement('div');
     scaleText.classList.add('status-bar-scale');
     scaleText.style.top = `${(i / 10) * 100}%`;
     scaleText.textContent = value;
 
-    // 添加到狀態條
     statusBar.appendChild(scaleLine);
     statusBar.appendChild(scaleText);
   }
 
-  // 包装 clickableBox 与 x/y 轴
+  // 用外層容器包住地圖，方便疊加 X/Y 軸刻度。
   const container = document.createElement('div');
   container.style.position = 'relative';
   container.style.display = 'inline-block';
 
-  // 创建 X 和 Y 轴容器
   const xAxis = document.createElement('div');
   xAxis.id = 'x-axis-5050';
   xAxis.style.position = 'absolute';
-  xAxis.style.top = '-20px'; // X 軸應該在 clickableBox 下方對齊
-  xAxis.style.left = '-5px'; // 對齊 clickableBox 左側
-  xAxis.style.width = `${gridSize * 30}px`; // 動態寬度：格子數量 * 格子大小
+  xAxis.style.top = '-20px';
+  xAxis.style.left = '-5px';
+  xAxis.style.width = `${gridSize * 30}px`;
   xAxis.style.display = 'grid';
-  xAxis.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`; // 每個格子一個區間
+  xAxis.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
 
   const yAxis = document.createElement('div');
   yAxis.id = 'y-axis-5050';
   yAxis.style.position = 'absolute';
-  yAxis.style.top = '0'; // 與 clickableBox 頂部對齊
-  yAxis.style.left = '-20'; // 在 clickableBox 左側
-  yAxis.style.height = `${gridSize * 30}px`; // 動態高度：格子數量 * 格子大小
+  yAxis.style.top = '0';
+  yAxis.style.left = '-20';
+  yAxis.style.height = `${gridSize * 30}px`;
   yAxis.style.display = 'grid';
-  yAxis.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`; // 每個格子一個區間
+  yAxis.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
-  // 添加 X 和 Y 轴容器到父级容器
   container.appendChild(clickableBox);
   container.appendChild(xAxis);
   container.appendChild(yAxis);
 
-  // 将容器插入页面
   document.querySelector('.interactive-panel-5050').prepend(container);
 
-  // 滑鼠事件
+  // 滑鼠移到格子時顯示的提示框。
   const tooltip = document.createElement('div');
   tooltip.id = 'tooltip';
   tooltip.style.position = 'absolute';
-  tooltip.style.display = 'none'; // 預設不顯示
+  tooltip.style.display = 'none';
   tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
   tooltip.style.color = 'white';
   tooltip.style.padding = '5px 10px';
   tooltip.style.borderRadius = '5px';
   tooltip.style.fontSize = '12px';
-  tooltip.style.pointerEvents = 'none'; // 防止 tooltip 擋到滑鼠事件
+  tooltip.style.pointerEvents = 'none';
   document.body.appendChild(tooltip);
 
-  // QTS優化後的epin檔
   const fileContent = `
   Map :
   50x50
@@ -1202,38 +1194,35 @@ document.addEventListener('DOMContentLoaded', function () {
 *1000 [{x: 10, y: 0}, {x: 18, y: 0}, {x: 36, y: 1}, {x: 2, y: 2}, {x: 22, y: 2}, {x: 29, y: 2}, {x: 42, y: 2}, {x: 48, y: 3}, {x: 15, y: 6}, {x: 9, y: 7}, {x: 2, y: 9}, {x: 22, y: 9}, {x: 34, y: 9}, {x: 27, y: 10}, {x: 40, y: 10}, {x: 47, y: 10}, {x: 16, y: 13}, {x: 9, y: 14}, {x: 25, y: 15}, {x: 2, y: 16}, {x: 33, y: 16}, {x: 24, y: 17}, {x: 32, y: 17}, {x: 40, y: 17}, {x: 47, y: 17}, {x: 17, y: 19}, {x: 9, y: 21}, {x: 38, y: 22}, {x: 1, y: 23}, {x: 46, y: 23}, {x: 24, y: 24}, {x: 30, y: 24}, {x: 16, y: 26}, {x: 8, y: 28}, {x: 38, y: 28}, {x: 46, y: 29}, {x: 0, y: 30}, {x: 30, y: 30}, {x: 23, y: 31}, {x: 15, y: 33}, {x: 39, y: 33}, {x: 7, y: 34}, {x: 32, y: 35}, {x: 46, y: 35}, {x: 2, y: 38}, {x: 17, y: 38}, {x: 24, y: 38}, {x: 10, y: 39}, {x: 31, y: 39}, {x: 39, y: 40}, {x: 46, y: 41}, {x: 4, y: 42}, {x: 24, y: 45}, {x: 6, y: 46}, {x: 15, y: 46}, {x: 19, y: 46}, {x: 28, y: 46}, {x: 34, y: 46}, {x: 2, y: 47}, {x: 9, y: 47}, {x: 40, y: 47}, {x: 47, y: 47}]
    `;
 
-  // 生成每個格子
+  // 依指定大小重建大型地圖，並套用預設配置。
   function renderGrid(size, layout = []) {
-    clickableBox.innerHTML = ''; // 清空原本內容
+    clickableBox.innerHTML = '';
     clickableBox.style.display = 'grid';
     clickableBox.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     clickableBox.style.gridTemplateRows = `repeat(${size}, 1fr)`;
   
-    // 計算每個格子的大小
-    const boxSize = 600; // 黑色框框大小 (已在CSS固定300px)
-    const cellSize = Math.floor(boxSize / size);
-    const cells = []; // 儲存格子狀態
 
-    // 渲染轴标签
+    const boxSize = 600;
+    const cellSize = Math.floor(boxSize / size);
+    const cells = [];
+
     renderAxes(size);
 
-    // 清空 sensors 與計數
+    // 每次重繪都先重置感測器與地圖狀態。
     sensors.length = 0;
     sensorCount = 0;
     gbestDisplay.textContent = `Sensor Count: ${sensorCount}`;
 
-    // 生成格子
     for (let i = 0; i < size * size; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
-      cell.dataset.index = i; // 設置格子索引
-      cell.style.backgroundColor = 'rgb(0, 45, 255)'; // 預設為深藍色
-      cells[i] = false; // 初始狀態：沒有 sensor
+      cell.dataset.index = i;
+      cell.style.backgroundColor = 'rgb(0, 45, 255)';
+      cells[i] = false;
 
       const x = i % size;
       const y = Math.floor(i / size);
 
-      // 檢查是否需要擺放初始 sensor
       const isSensor = layout.some(sensor => sensor.x === x && sensor.y === y);
       if (isSensor) {
         cell.classList.add('sensor');
@@ -1241,12 +1230,11 @@ document.addEventListener('DOMContentLoaded', function () {
         sensorCount++;
       }
 
-      // 點擊事件：添加/移除 sensor
+        // 點擊格子可切換是否放置感測器。
       cell.addEventListener('click', function () {
-        // 【重要】在狀態改變前，先存檔目前的狀態！
+
         saveMapState();
 
-        // 點擊邏輯：添加/移除 sensor
         if (cell.classList.contains('sensor')) {
           cell.classList.remove('sensor');
           sensors.splice(sensors.findIndex(s => s.x === x && s.y === y), 1);
@@ -1257,37 +1245,36 @@ document.addEventListener('DOMContentLoaded', function () {
           sensorCount++;
         }
 
-        // 更新 Gbest 顯示
         gbestDisplay.textContent = `${sensorCount}`;
         calculateDetectionProbability(size, sensors, clickableBox);
 
-        // 自動更新連線
         if (isConnectMode) {
           connectSensors();
         }
       });
-      // 滑鼠靠近時顯示 Tooltip
+
+        // 顯示目前格子的列、欄、機率與門檻值。
       cell.addEventListener('mousemove', function (e) {
-        const probability = cell.dataset.probability || 0; // 取得當前機率
-        // 計算當前格子的 threshold 值
-        let currentThreshold = 0.3; // 預設值
+        const probability = cell.dataset.probability || 0;
+
+        let currentThreshold = 0.3;
         if (limitThreshold && limitThreshold[y] && limitThreshold[y][x] !== undefined) {
-          currentThreshold = limitThreshold[y][x]; // 從 limitThreshold 中取得對應值
+          currentThreshold = limitThreshold[y][x];
         }
       
-        // 更新 Tooltip 內容
+
         tooltip.innerHTML = `
           Row: ${x+1}, Column: ${y+1}<br>
           Detection Probability: ${parseFloat(probability).toFixed(3)}<br>
           Threshold: ${currentThreshold.toFixed(2)}
         `;
       
-        // 設置 Tooltip 位置（滑鼠右上角）
+
         tooltip.style.left = `${e.pageX + 10}px`;
         tooltip.style.top = `${e.pageY - 10}px`;
         tooltip.style.display = 'block';
       });
-      // 滑鼠離開時隱藏 Tooltip
+
       cell.addEventListener('mouseleave', function () {
         tooltip.style.display = 'none';
       });
@@ -1296,103 +1283,101 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     gbestDisplay.textContent = `${sensorCount}`;
     calculateDetectionProbability(size, sensors, clickableBox);
-    // 如果處於連線模式，自動觸發連線功能
+
     if (isConnectMode) {
       connectSensors();
     }
-    // 更新進度條的generation
+
     generationSlider.max = Object.keys(generations).length;
-    updateProgressBar(0); // 同步更新進度條
+    updateProgressBar(0);
   }
-  // 生成xy軸標籤
+
+  // 依據目前地圖實際尺寸重新計算刻度位置。
   function renderAxes(gridSize) {
-    // 獲取 clickableBox 的寬度和高度
+
     let boxWidth = clickableBox.offsetWidth - 8;
     let boxHeight = clickableBox.offsetHeight - 8;
-    // 計算每個格子的大小
+
     if(boxWidth === -8) boxWidth = 600 - 8;
     if(boxHeight === -8) boxHeight = 600 - 8;
     const cellWidth = boxWidth / gridSize;
     const cellHeight = boxHeight / gridSize;
 
-    // 1. 固定字體大小 (你可以依需求修改這裡的數字，例如 12px 或 16px)
     const fixedFontSize = '12px';
 
-    // 清空 X 和 Y 軸內容
     xAxis.innerHTML = '';
     yAxis.innerHTML = '';
+    xAxis.style.width = `${boxWidth}px`;
+    yAxis.style.height = `${boxHeight}px`;
 
-    // 生成 X 軸標籤（從左到右）
     for (let i = 0; i < gridSize; i++) {
       const label = document.createElement('div');
       label.style.position = 'absolute';
       label.style.top = `-1px`;
-      label.style.left = `${8 + i * cellWidth}px`; // 動態計算每個標籤的位置
+      label.style.left = `${8 + i * cellWidth}px`;
       label.style.width = `${cellWidth}px`;
       label.style.textAlign = 'center';
-      label.style.fontSize = fixedFontSize; // 動態設置字體大小
+      label.style.fontSize = fixedFontSize;
 
-      // 每 5 格顯示一次標籤
       if (i % 5 === 0) {
-        label.textContent = i + 1; // 從 1 開始
+        label.textContent = i + 1;
       } else {
-        label.textContent = ''; // 中間不顯示
+        label.textContent = '';
       }
 
       xAxis.appendChild(label);
     }
 
-    // 生成 Y 軸標籤（從上到下）
     for (let i = 0; i < gridSize; i++) {
       const label = document.createElement('div');
       label.style.position = 'absolute';
-      label.style.top = `${4 + i * cellHeight}px`; // 動態計算每個標籤的位置
+      label.style.top = `${4 + i * cellHeight}px`;
       label.style.left = `2px`;
       label.style.height = `${cellHeight}px`;
       label.style.textAlign = 'right';
-      label.style.fontSize = fixedFontSize; // 動態設置字體大小
-      label.style.lineHeight = `${cellHeight}px`; // 垂直置中
+      label.style.fontSize = fixedFontSize;
+      label.style.lineHeight = `${cellHeight}px`;
 
-      // 每 5 格顯示一次標籤
       if (i % 5 === 0) {
-        label.textContent = i + 1; // 從 1 開始
+        label.textContent = i + 1;
       } else {
-        label.textContent = ''; // 中間不顯示
+        label.textContent = '';
       }
 
       yAxis.appendChild(label);
     }
   }
-  // 依據世代數，更新格子資訊
+
+  // 依指定世代資料更新整張地圖。
   function updateGrid(generationData) {
-    // 1. 清空現有的感測器標記
+
     sensors.length = 0;
     sensorCount = 0;
     const cells = clickableBox.childNodes;
     cells.forEach(cell => {
-      cell.classList.remove('sensor'); // 移除感測器標記
-      cell.style.backgroundColor = 'rgb(0, 45, 255)'; // 恢復預設顏色
-      cell.classList.remove('dissatisfy'); // 移除不滿足標記
-      cell.dataset.probability = 0; // 重置機率
+      cell.classList.remove('sensor');
+      cell.style.backgroundColor = 'rgb(0, 45, 255)';
+      cell.classList.remove('dissatisfy');
+      cell.dataset.probability = 0;
     });
   
-    // 2. 根據 generationData 更新感測器位置
+
     generationData.forEach(sensor => {
-      const index = sensor.y * gridSize + sensor.x; // 計算格子索引
+      const index = sensor.y * gridSize + sensor.x;
       const cell = cells[index];
-      cell.classList.add('sensor'); // 標記為感測器
+      cell.classList.add('sensor');
       sensorCount++;
       sensors.push(sensor);
-      //cell.style.backgroundColor = '#E2C6C4'; // 更新顏色
+
     });
 
-    // 更新 Gbest 顯示
     gbestDisplay.textContent = `${sensorCount}`;
     calculateDetectionProbability(gridSize, sensors, clickableBox);
   }
-  // 計算map的偵測機率
+
+  // 由每個感測器向外擴散，累積各格子的偵測機率。
   function calculateDetectionProbability(gridSize, sensors, grid) {
-    // 初始化所有格子的機率為 0
+
     const probabilities = Array(gridSize * gridSize).fill(0);
   
     
@@ -1402,109 +1387,103 @@ document.addEventListener('DOMContentLoaded', function () {
   
       for (let dx = -sensingRange; dx <= sensingRange; dx++) {
         for (let dy = -sensingRange; dy <= sensingRange; dy++) {
-          const distance = Math.sqrt(dx * dx + dy * dy); // 計算歐幾里得距離
-          if (distance > sensingRange || distance === 0) continue; // 超出範圍或自身略過
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance > sensingRange || distance === 0) continue;
   
-          const prob = 1 / distance; // 偵測機率是距離的倒數
+          const prob = 1 / distance;
           const targetX = sensorX + dx;
           const targetY = sensorY + dy;
   
           if (targetX >= 0 && targetX < gridSize && targetY >= 0 && targetY < gridSize) {
             const index = targetY * gridSize + targetX;
-            probabilities[index] = 1 - (1 - probabilities[index]) * (1 - prob); // 疊加公式
+            probabilities[index] = 1 - (1 - probabilities[index]) * (1 - prob);
           }
         }
       }
     });
 
-    // 將放置 sensor 的格子機率設為 1
     grid.childNodes.forEach((cell, index) => {
       const x = index % gridSize;
       const y = Math.floor(index / gridSize);
 
       const isSensor = sensors.some(sensor => sensor.x === x && sensor.y === y);
       if (isSensor) {
-        probabilities[index] = 1; // 強制設為 1
+        probabilities[index] = 1;
       }
 
-      // 儲存機率到格子 dataset
       cell.dataset.probability = probabilities[index];
     });
   
-    probabilitiesCache = probabilities; // 更新 cache
+    probabilitiesCache = probabilities;
     applyProbabilitiesToGrid(probabilities, grid);
 
-    // 更新完成率
     const completionRate = calculateCompletionRate(grid);
     mapCheck.textContent = `${completionRate}% Completed`;
   }
-  // 更新格子的狀態
-  function applyProbabilitiesToGrid(probabilities, grid) {
-    let currentThreshold = threshold; // 預設為 0.3
 
-    // 過濾出所有格子，排除連線等其他元素
+  // 把機率映射成顏色，並標記未達門檻的格子。
+  function applyProbabilitiesToGrid(probabilities, grid) {
+    let currentThreshold = threshold;
+
     const cells = Array.from(grid.childNodes).filter(cell => cell.classList.contains('grid-cell'));
 
-    // 根據機率更新格子顏色
     cells.forEach((cell, index) => {
-      const rows = Math.sqrt(cells.length); // 假設 grid 為正方形
-      const row = Math.floor(index / rows); // 計算該格子的行號
-      const col = index % rows; // 計算該格子的列號
+      const rows = Math.sqrt(cells.length);
+      const row = Math.floor(index / rows);
+      const col = index % rows;
 
-      // 如果有檔案中的 limitThreshold，取對應的值
       if (limitThreshold && limitThreshold[row] && limitThreshold[row][col] !== undefined) {
         currentThreshold = limitThreshold[row][col];
       }
-      // 更新格子樣式
+
       if (cell.classList.contains('sensor')) {
-        // 如果是 sensor，顏色保持黑色
+
         cell.style.backgroundColor = '#E2C6C4';
-        cell.classList.remove('dissatisfy'); // 移除紅色斜線
+        cell.classList.remove('dissatisfy');
       } else {
         const probability = probabilities[index];
-        cell.dataset.probability = probability; // 儲存機率
+        cell.dataset.probability = probability;
 
         if (probability > currentThreshold) {
-          // 機率大於 Threshold，顯示機率顏色
+
           cell.style.backgroundColor = getColorFromProbability(probability);
-          cell.classList.remove('dissatisfy'); // 移除紅色斜線
+          cell.classList.remove('dissatisfy');
         } else {
           if (!isThresholdMode) {
-            // 非 Threshold 模式時，顯示機率顏色
+
             cell.style.backgroundColor = getColorFromProbability(probability);
           } else {
-            // 機率小於等於 Threshold，顯示 Threshold 顏色並加紅色斜線
+
             cell.style.backgroundColor = lightenColor(getColorFromProbability(currentThreshold), 0.6);
           }
-          cell.classList.add('dissatisfy'); // 添加紅色斜線
+          cell.classList.add('dissatisfy');
         }
       }
     });
   }
-  // 更新 getColorFromProbability 函數
+
+  // 依機率做色階插值，產生熱度顏色。
   function getColorFromProbability(prob) {
     const colors = [
-      { stop: 0.0, r: 0, g: 45, b: 255 },     // 深藍色
-      { stop: 0.2, r: 0, g: 95, b: 255 },     // 藍色
-      { stop: 0.33, r: 0, g: 255, b: 255 },    // 淺藍色
-      { stop: 0.4, r: 0, g: 255, b: 130 },    // 藍綠色
-      { stop: 0.45, r: 84, g: 255, b: 0 },     // 綠色
-      { stop: 0.55, r: 255, g: 255, b: 0 },    // 黃色
-      { stop: 0.75, r: 255, g: 125, b: 0 },    // 橘色
-      //{ stop: 0.9, r: 255, g: 29, b: 0 },     // 橘紅色
-      { stop: 1.0, r: 234, g: 0, b: 0 },      // 紅色
-      //{ stop: 1.0, r: 198, g: 0, b: 0 }       // 深紅色
+      { stop: 0.0, r: 0, g: 45, b: 255 },
+      { stop: 0.2, r: 0, g: 95, b: 255 },
+      { stop: 0.33, r: 0, g: 255, b: 255 },
+      { stop: 0.4, r: 0, g: 255, b: 130 },
+      { stop: 0.45, r: 84, g: 255, b: 0 },
+      { stop: 0.55, r: 255, g: 255, b: 0 },
+      { stop: 0.75, r: 255, g: 125, b: 0 },
+
+      { stop: 1.0, r: 234, g: 0, b: 0 },
+
     ];
 
-    // 遍歷顏色區間，找到當前機率所在範圍
     for (let i = 0; i < colors.length - 1; i++) {
       const start = colors[i];
       const end = colors[i + 1];
 
       if (prob >= start.stop && prob <= end.stop) {
-        const ratio = (prob - start.stop) / (end.stop - start.stop); // 計算插值比例
+        const ratio = (prob - start.stop) / (end.stop - start.stop);
 
-        // 線性插值計算 RGB 值
         const r = Math.floor(start.r + ratio * (end.r - start.r));
         const g = Math.floor(start.g + ratio * (end.g - start.g));
         const b = Math.floor(start.b + ratio * (end.b - start.b));
@@ -1513,49 +1492,51 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    return `rgb(0, 45, 255)`; // 預設返回深藍色
+    return `rgb(0, 45, 255)`;
   }
-  // 機率小於Threshold，顯示淡色
+
   function lightenColor(color, factor) {
-    // 假設 color 是 RGB 格式，例如 "rgb(255, 0, 0)"
-    const colorValues = color.match(/\d+/g).map(Number); // 提取 RGB 值
+
+    const colorValues = color.match(/\d+/g).map(Number);
     const [r, g, b] = colorValues;
   
-    // 根據 factor 計算變淡的顏色
+
     const newR = Math.min(255, r + (255 - r) * factor);
     const newG = Math.min(255, g + (255 - g) * factor);
     const newB = Math.min(255, b + (255 - b) * factor);
   
     return `rgb(${Math.round(newR)}, ${Math.round(newG)}, ${Math.round(newB)})`;
   }
-  // 計算完成率
+
+  // 計算目前地圖的完成度百分比。
   function calculateCompletionRate(grid) {
-    // 過濾出所有格子元素，排除連線元素
+
     const cells = Array.from(grid.childNodes).filter(cell => cell.classList.contains('grid-cell'));
 
-    const totalCells = cells.length; // 格子總數
+    const totalCells = cells.length;
     let nonDissatisfyCount = 0;
   
-    // 遍歷所有格子，計算非 dissatisfy 的數量
+
     cells.forEach(cell => {
       if (!cell.classList.contains('dissatisfy')) {
         nonDissatisfyCount++;
       }
     });
   
-    // 計算完成率並返回百分比
-    const completionRate = ((nonDissatisfyCount / totalCells) * 100).toFixed(2); // 保留兩位小數
-    return completionRate; // 保證寬度一致
-  }
-  // 繪製連線
-  function connectSensors() {
-    clearConnections(); // 確保連線不重疊
 
-    const cellSize = (clickableBox.offsetWidth-8) / gridSize; // 計算每個格子的大小
+    const completionRate = ((nonDissatisfyCount / totalCells) * 100).toFixed(2);
+    return completionRate;
+  }
+
+  // 依感測器距離畫出連線。
+  function connectSensors() {
+    clearConnections();
+
+    const cellSize = (clickableBox.offsetWidth-8) / gridSize;
 
     sensors.forEach((sensorA, indexA) => {
       sensors.forEach((sensorB, indexB) => {
-        if (indexA >= indexB) return; // 避免重複計算或自連
+        if (indexA >= indexB) return;
 
         const distance = Math.sqrt(
           Math.pow(sensorA.x - sensorB.x, 2) + Math.pow(sensorA.y - sensorB.y, 2)
@@ -1565,7 +1546,6 @@ document.addEventListener('DOMContentLoaded', function () {
           const line = document.createElement('div');
           line.classList.add('connection-line');
 
-          // 起點與終點位置計算
           const startX = (sensorA.x + 0.5) * cellSize + 4;
           const startY = (sensorA.y + 0.5) * cellSize + 4;
           const endX = (sensorB.x + 0.5) * cellSize + 4;
@@ -1574,33 +1554,32 @@ document.addEventListener('DOMContentLoaded', function () {
           const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
           const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
 
-          // 設置線條位置與角度
           line.style.width = `${length}px`;
-          line.style.height = `2px`; // 固定高度
+          line.style.height = `2px`;
           line.style.transform = `rotate(${angle}deg)`;
-          line.style.backgroundColor = `black`; // 確保顏色為黑色
+          line.style.backgroundColor = `black`;
           line.style.left = `${startX}px`;
           line.style.top = `${startY}px`;
 
-          clickableBox.appendChild(line); // 添加到 clickable-box 中
+          clickableBox.appendChild(line);
           connectionLines.push(line);
         }
       });
     });
   }
-  // 清除所有連線
+
   function clearConnections() {
     connectionLines.forEach(line => line.remove());
     connectionLines = [];
   }
-  // 解析檔案內容
+
+  // 解析匯入檔案內容，取出地圖與世代資料。
   function parseFileContent(content) {
     const lines = content.split('\n').map(line => line.trim());
     let currentSection = null;
     let generation = 0;
-    generations = {}; // 重置 generations
-    limitThreshold = []; // 重置 limitThreshold
-
+    generations = {};
+    limitThreshold = [];
 
     lines.forEach(line => {
       if (line.startsWith('Map')) {
@@ -1646,13 +1625,13 @@ document.addEventListener('DOMContentLoaded', function () {
           break;
 
         case 'GenerationData':
-          line = line.trim(); // 移除多餘空白
+          line = line.trim();
           const generationMatch = line.match(/\[.*\]/);
           if (generationMatch) {
-            // 找到包含感測器座標的 JSON 區域
+
             const dataMatch = line.match(/\[.*\]/);
             if (dataMatch) {
-              // 將座標 JSON 字串轉為陣列
+
               const sensorData = JSON.parse(dataMatch[0].replace(/(\w+):/g, '"$1":'));
               generations[generation] = sensorData;
             }
@@ -1663,76 +1642,74 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
   }
-  // 更新地圖
-  function updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations) {
-    // console.log('Map Size:', mapSize);
-    // console.log('Sensing Range:', sensingRange);
-    // console.log('Connect Distance:', connectDistance);
-    // console.log('Limit Threshold:', limitThreshold);
-    // console.log('Generations:', generations);
 
-    // 更新地圖大小和格子配置
-    gridSize = mapSize; // 更新全域變數
-    historyStack = []; // 清空上一步紀錄
-    renderGrid(gridSize, generations[0] || []); // 預設顯示第一代感測器擺放位置
+  // 根據檔案內容更新地圖參數與畫面。
+  function updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations) {
+
+    gridSize = mapSize;
+    historyStack = [];
+    renderGrid(gridSize, generations[0] || []);
   }
-  // 更新進度條的值和顯示的 generation 數
+
   function updateProgressBar(generation) {
-    generationSlider.value = generation + 1; // 更新滑桿位置
-    currentGenerationDisplay.textContent = generation + 1; // 更新顯示的 generation
+    generationSlider.value = generation + 1;
+    currentGenerationDisplay.textContent = generation + 1;
   }
-  // 開始播放功能
+
+  // 播放世代變化動畫。
   function startPlayback() {
     playInterval = setInterval(() => {
-      // 如果已播放到最後一代，自動暫停
+
       if (currentGeneration >= Object.keys(generations).length) {
-        clearInterval(playInterval); // 清除計時器
+        clearInterval(playInterval);
         isPlaying = false;
-        playPauseBtn.textContent = 'Play'; // 更新按鈕文字
+        playPauseBtn.textContent = 'Play';
         currentGeneration = 0;
       } else {
-        updateGrid(generations[currentGeneration] || []); // 更新格子資訊
-        updateProgressBar(currentGeneration); // 同步更新進度條
-        currentGeneration++; // 進入下一代
+        updateGrid(generations[currentGeneration] || []);
+        updateProgressBar(currentGeneration);
+        currentGeneration++;
       }
-    }, 1000 / playbackSpeed); // 根據速度倍率調整間隔
+    }, 1000 / playbackSpeed);
   }
-  // 2. 儲存當前 Map 狀態的 function
+
   function saveMapState() {
+  // 儲存目前感測器配置，供 Undo 使用。
     const cells = clickableBox.children;
     const currentState = [];
     
-    // 掃描所有格子，把有 sensor 的格子轉換成 x, y 座標存起來
+
     for (let i = 0; i < cells.length; i++) {
       if (cells[i].classList.contains('sensor')) {
-        // 透過 index 計算出 x 和 y 的座標
+
         const x = i % mapSize;
         const y = Math.floor(i / mapSize);
         
-        // 【關鍵修改】改成存入 {x, y} 物件，這樣才跟 generations 的資料一樣！
+
         currentState.push({ x: x, y: y }); 
       }
     }
     
-    // 把這個狀態推入歷史紀錄中
+
     historyStack.push(currentState);
     
-    // 限制最多只記 50 步，避免記憶體佔用過大
+
     if (historyStack.length > 50) {
       historyStack.shift(); 
     }
   }
-  // 根據選項更新格子
+
+  // 切換下拉選單時載入對應的預設地圖。
   solutionDropdown.addEventListener('change', function () {
     const selectedValue = parseInt(this.value);
     limitThreshold = [];
     generations = {};
 
     if (selectedValue === 1 || selectedValue === 2 || selectedValue === 3){
-      gridSize = 50;  // 預設map大小
-      sensingRange = 5; // 預設感測範圍
-      connectDistance = 8; // 預設連線距離
-      // 傳入對應的初始 sensor 位置
+      gridSize = 50;
+      sensingRange = 5;
+      connectDistance = 8;
+
       renderGrid(gridSize, sensorLayouts[selectedValue] || []);
     }
     else if (selectedValue === 4) {
@@ -1740,14 +1717,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   renderGrid(gridSize, sensorLayouts[1] || []);
-  // 切換threshold / detection probability 模式
+
+  // 門檻模式：切換檢視方式。
   thresholdBtn.addEventListener('click', function () {
     isThresholdMode = !isThresholdMode;
     thresholdBtn.textContent = isThresholdMode ? 'Coverage' : 'Threshold';
 
     applyProbabilitiesToGrid(probabilitiesCache, clickableBox);
   });
-  // 連線與移除連線
+
+  // 連線模式：切換是否顯示感測器連線。
   connectBtn.addEventListener('click', function () {
     isConnectMode = !isConnectMode;
     connectBtn.textContent = isConnectMode ? 'Disconnect' : 'Connect';
@@ -1758,72 +1737,67 @@ document.addEventListener('DOMContentLoaded', function () {
       clearConnections();
     }
   });
-  // 保存地圖
+
+  // 匯出目前地圖與感測器配置。
   savemapBtn.addEventListener('click', function () {
 
-    const cells = clickableBox.children; // 取得所有格子
+    const cells = clickableBox.children;
     const currentSensors = [];
     
-    // 準備儲存 Limit 資訊的二維陣列 (50x50)
+
     const limitMatrix = [];
     for (let i = 0; i < mapSize; i++) {
       limitMatrix.push(new Array(mapSize).fill(0));
     }
 
-    // 1. 遍歷所有的 cell，同時抓取 Limit 與 Sensor 座標
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i];
       const x = i % mapSize;
       const y = Math.floor(i / mapSize);
       
-      // 【讀取 Limit】
-      // 優先從 dataset 讀取 data-limit，或從自訂屬性讀取 limit。若真的都沒抓到，預設給 0.3 避免破圖
-      const limitVal = cell.dataset.limit || cell.getAttribute('limit') || "0.3";
-      limitMatrix[y][x] = limitVal; // 將抓取到的 limit 填入對應的 y 列 x 行
 
-      // 【讀取 Sensor】
+      const limitVal = cell.dataset.limit || cell.getAttribute('limit') || "0.3";
+      limitMatrix[y][x] = limitVal;
+
       if (cell.classList.contains('sensor')) {
         currentSensors.push({ x: x, y: y });
       }
     }
 
-    // 2. 開始組合要寫入檔案的內容
     let outputChunks = [];
     outputChunks.push(`Map :\n${mapSize}x${mapSize}`);
     outputChunks.push(`Sensing_range : ${sensingRange}`);
     outputChunks.push(`Connect : ${connectDistance}`);
 
-    // 3. 寫入 Limit 矩陣區塊
     outputChunks.push(`Limit :`);
     limitMatrix.forEach(row => {
-      // 把每一列的 limit 數字用空白隔開，然後加入輸出字串
+
       outputChunks.push(row.join(' '));
     });
 
-    // 4. 只輸出一代 (當前畫面)，標記為第 1 代
     outputChunks.push(`Generation :`);
     const formattedSensors = `[${currentSensors.map(s => `{x: ${s.x}, y: ${s.y}}`).join(', ')}]`;
     outputChunks.push(`*1 ${formattedSensors}`);
 
-    // 5. 封裝檔案並觸發下載
     const finalContent = outputChunks.join('\n');
     const blob = new Blob([finalContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `MapOutput.epin`; // 輸出的檔名
+    a.download = `MapOutput.epin`;
     document.body.appendChild(a);
     a.click();
     
-    // 清理瀏覽器產生的虛擬連結
+
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
 
   });
-  // 檔案讀取
+
+  // 匯入外部地圖檔案。
   fileInput.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1831,100 +1805,101 @@ document.addEventListener('DOMContentLoaded', function () {
     const reader = new FileReader();
     reader.onload = function (e) {
       const content = e.target.result;
-      parseFileContent(content); // 解析檔案內容
+      parseFileContent(content);
     };
     reader.readAsText(file);
 
-    // **重置 input 的值**
-    fileInput.value = ''; // 讓相同檔案再次被選取時能觸發事件
+    fileInput.value = '';
   }); 
-  // 按下播放/暫停按鈕時觸發
+
+  // 播放 / 暫停世代動畫。
   playPauseBtn.addEventListener('click', function () {
     if (isPlaying) {
-      // 如果正在播放，則暫停播放
-      clearInterval(playInterval); // 清除計時器
+
+      clearInterval(playInterval);
       isPlaying = false;
-      playPauseBtn.textContent = 'Play'; // 更新按鈕文字
+      playPauseBtn.textContent = 'Play';
     } else {
-      // 如果暫停，則開始播放
+
       isPlaying = true;
-      playPauseBtn.textContent = 'Pause'; // 更新按鈕文字
+      playPauseBtn.textContent = 'Pause';
   
-      startPlayback(); // 開始播放
+      startPlayback();
     }
   });
-  // 拖曳進度條可選擇generation，更新進度條的值和顯示的 generation 數
+
+  // 拖曳滑桿時切換到指定世代。
   generationSlider.addEventListener('input', function () {
-    const generation = parseInt(generationSlider.value, 10) - 1; // 取得滑桿的值
+    const generation = parseInt(generationSlider.value, 10) - 1;
     currentGeneration = generation;
-    updateProgressBar(currentGeneration); // 更新進度條顯示
-    updateGrid(generations[currentGeneration] || []); // 更新格子資訊
+    updateProgressBar(currentGeneration);
+    updateGrid(generations[currentGeneration] || []);
   });
-  // 加速功能
+
+  // 加快播放速度。
   speedUpBtn.addEventListener('click', () => {
     if (playbackSpeed < maxSpeed) {
       playbackSpeed++;
       speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
 
-      // 如果正在播放，重新調整播放間隔
       if (isPlaying) {
-        clearInterval(playInterval); // 清除當前計時器
-        startPlayback(); // 使用新的速度重新啟動播放
+        clearInterval(playInterval);
+        startPlayback();
       }
     }
   });
-  // 減速功能
+
+  // 降低播放速度。
   speedDownBtn.addEventListener('click', () => {
     if (playbackSpeed > minSpeed) {
       playbackSpeed--;
       speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
 
-      // 如果正在播放，重新調整播放間隔
       if (isPlaying) {
-        clearInterval(playInterval); // 清除當前計時器
-        startPlayback(); // 使用新的速度重新啟動播放
+        clearInterval(playInterval);
+        startPlayback();
       }
     }
   });
-  // 當按下 "Set Size" 按鈕時觸發
+
+  // 依輸入值重新設定地圖大小。
   setMapSizeBtn.addEventListener('click', function() {
-    // 1. 取得並驗證輸入的值
+
     const newSize = parseInt(mapSizeInput.value, 10);
     
     if (isNaN(newSize) || newSize <= 0) {
-      alert("請輸入有效的正整數！(例如: 5)");
+      alert("隢撓?嚙踝蕭??嚙踝蕭?嚙?嚙踝蕭?嚙踝蕭?(靘蕭?: 5)");
       return;
     }
 
-    // 2. 更新全域變數參數
     mapSize = newSize;
-    connectDistance = 5;       // Connect 變成 5
-    sensingRange = 5;          // 如果你有需要重設 sensing range 也可以加在這裡
+    connectDistance = 5;
+    sensingRange = 5;
     
-    // 3. 重設 limitThreshold 陣列，使其變成 newSize x newSize 大小，且全部填滿 0.3
+
     limitThreshold = [];
     for (let i = 0; i < mapSize; i++) {
       limitThreshold.push(new Array(mapSize).fill(0.3));
     }
 
-    // 4. 重置 sensor (傳入空的代數資料，視你的 updateMap 接收格式，通常是空陣列或空物件)
-    generations = []; // 或是 {} 依你原本的格式為主
+    generations = [];
 
-    // 5. 直接呼叫你的 updateMap 函數重新渲染畫面！
     updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
   });
-  // 返回上一步的按鈕
+
+  // 復原到上一個儲存狀態。
   undoBtn.addEventListener('click', function() {
-    // 檢查是否還有歷史紀錄
+
     if (historyStack.length === 0) {
-      // console.log("已經是最初狀態，沒有上一步可以復原了！");
-      return; // 結束執行
+
+      return;
     }
       
-    // 拿出上一個狀態 (這會把陣列最後一個元素移除並回傳)
+
     const previousState = historyStack.pop();
     
-    // 同步更新畫面上顯示的 Sensor Count
-    updateGrid(previousState || []); // 更新格子資訊
+
+    updateGrid(previousState || []);
   });
 });
+

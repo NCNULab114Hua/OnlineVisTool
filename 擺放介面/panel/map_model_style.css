@@ -1,73 +1,81 @@
-/* 僅在 map_model.js 中使用的樣式 */
 body {
   font-family: Arial, sans-serif;
 }
+
 .eyebrow {
   margin-bottom: 10px;
 }
-/* 置中主內容區塊 */
+
 .interactive-panel {
   display: flex;
-  justify-content: center; /* 水平置中 */
-  align-items: center;     /* 垂直置中 */
-  gap: 40px;               /* 元素之間的間距 */
-  min-height: 200px;       /* 設定最小高度確保置中效果 */
-}
-/* 左邊的點擊框 */
-.clickable-box {
-  width: 300px; /* 黑色大框框寬度固定 */
-  height: 300px; /* 黑色大框框高度固定 */
-  border: 4px solid black; /* 黑色外框 */
-  display: grid; /* 設定為 grid 佈局 */
-  box-sizing: border-box; /* 包含邊框大小 */
-  overflow: hidden; /* 防止溢出 */
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 200px;
+  padding: 0.35rem;
+  width: fit-content;
+  margin: 0 auto;
 }
 
-/* 中間的狀態條 */
+.clickable-box {
+  width: 300px;
+  height: 300px;
+  border: 1px solid rgba(23, 51, 83, 0.22);
+  border-radius: 0;
+  display: grid;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 18px 35px rgba(28, 52, 88, 0.12);
+}
+
 .status-bar {
-  width: 30px; /* 固定寬度 */
-  height: 300px; /* 固定高度 */
+  width: 36px;
+  height: 300px;
   background: linear-gradient(to bottom,
-    /*rgb(198, 0, 0) 0%,*/          /* 深紅色 */
-    rgb(234, 0, 0) 0%,         /* 紅色 */
-    /*rgb(255, 29, 0) 10%,*/        /* 橘紅色 */
-    rgb(255, 125, 0) 25%,       /* 橘色 */
-    rgb(255, 255, 0) 45%,       /* 黃色 */
-    rgb(84, 255, 0) 55%,        /* 綠色 */
-    rgb(0, 255, 130) 60%,       /* 藍綠色 */
-    rgb(0, 255, 255) 67%,       /* 淺藍色 */
-    rgb(0, 95, 255) 80%,        /* 藍色 */
-    rgb(0, 45, 255) 100%        /* 深藍色 */
+    rgb(234, 0, 0) 0%,
+    rgb(255, 125, 0) 25%,
+    rgb(255, 255, 0) 45%,
+    rgb(84, 255, 0) 55%,
+    rgb(0, 255, 130) 60%,
+    rgb(0, 255, 255) 67%,
+    rgb(0, 95, 255) 80%,
+    rgb(0, 45, 255) 100%
   );
   position: relative;
-  border: 1px solid black;
+  border: 1px solid rgba(23, 51, 83, 0.2);
+  border-radius: 0;
   display: inline-block;
   box-sizing: border-box;
-}
-/* 刻度線 */
-.scale-line {
-  position: absolute;
-  right: 0px; /* 線條出現在右側 */
-  width: 8px; /* 短線條的長度 */
-  height: 1px; /* 線條高度 */
-  background-color: black;
-}
-/* 刻度數字 */
-.status-bar-scale {
-  position: absolute;
-  left: 35px; /* 數字放在 Status Bar 右側 */
-  font-size: 12px;
-  color: black;
-  text-align: center;
-  transform: translateY(-50%); /* 垂直居中對齊 */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
-/* 右邊內容區 */
+.scale-line {
+  position: absolute;
+  right: 0;
+  width: 10px;
+  height: 1px;
+  background-color: rgba(20, 35, 52, 0.55);
+}
+
+.status-bar-scale {
+  position: absolute;
+  left: 48px;
+  font-size: 12px;
+  color: #38506a;
+  text-align: center;
+  transform: translateY(-50%);
+  font-weight: 600;
+}
+
 .dropdown-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
+
 select {
   padding: 5px;
 }
@@ -81,27 +89,27 @@ select {
 .sensor-box {
   width: 20px;
   height: 20px;
-  background-color: #E2C6C4; /* 強制覆蓋原有顏色 */
-  background-image: url('../image/signal.svg');  /* 放入圖片 */
+  background-color: #d6edf1;
+  background-image: url('../image/signal.svg');
   background-size: 90%;
   background-position: center;
   background-repeat: no-repeat;
-  border: 2px solid black;
+  border: 2px solid rgba(34, 52, 74, 0.8);
 }
 
 .dissatisfy-box {
   width: 20px;
   height: 20px;
-  border: 2px solid black; /* 黑色外框 */
+  border: 2px solid rgba(34, 52, 74, 0.8);
   background: linear-gradient(
-    to bottom left,  /* 左上到右下 */
-    transparent 45%, /* 保留透明部分 */
-    red 50%,         /* 中間紅色線條 */
-    transparent 55%  /* 其餘透明 */
+    to bottom left,
+    transparent 45%,
+    red 50%,
+    transparent 55%
   );
   box-sizing: border-box;
 }
-/* 文字排版 */
+
 .caption {
   margin-top: 20px;
   font-size: 14px;
@@ -110,22 +118,30 @@ select {
 .bold-text {
   font-weight: bold;
 }
-/* 基礎格子樣式 */
+
 .grid-cell {
-  border: 1px solid #ddd; /* 格子邊框 */
-  background-color: white; /* 預設背景 */
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.92);
   box-sizing: border-box;
   cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(10, 28, 52, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background-color 0.16s ease, box-shadow 0.16s ease;
 }
-/* 放置 Sensor 的格子 */
+
+.grid-cell:hover {
+  background-color: #f3f9ff;
+}
+
 .sensor {
-  background-color: #E2C6C4; /* 強制覆蓋原有顏色 */
-  background-image: url('../image/signal.svg');  /* 放入圖片 */
-  background-size: contain;                 /* 讓圖標稍微小一點點，看起來更精緻 */
+  background-color: #d6edf1;
+  background-image: url('../image/signal.svg');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
-/* 不符合門檻值的格子 (圖三樣式) */
+
 .dissatisfy::after {
   content: "";
   position: absolute;
@@ -136,39 +152,54 @@ select {
   background: linear-gradient(to bottom left, transparent 45%, red 50%, transparent 55%);
   pointer-events: none;
 }
-/* 格子內的紅色斜線 */
+
 .dissatisfy {
   position: relative;
 }
-/* 滑鼠框框樣式*/
+
 #tooltip {
   position: absolute;
   display: none;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(13, 22, 35, 0.82);
   color: white;
   padding: 5px 10px;
-  border-radius: 5px;
+  border-radius: 0;
   font-size: 12px;
-  pointer-events: none; /* 避免干擾滑鼠事件 */
+  pointer-events: none;
   z-index: 1000;
-  white-space: nowrap; /* 防止換行 */
+  white-space: nowrap;
 }
 
 #x-axis {
   display: grid;
-  grid-template-columns: repeat(20, 1fr); /* 适配网格大小，20为最大值 */
-  margin-top: 5px; /* 与网格间距 */
+  grid-template-columns: repeat(20, 1fr);
+  margin-top: 5px;
   position: absolute;
-  top: 310px; /* 根据网格动态调整 */
-  left: 30px; /* 与网格左侧对齐 */
+  top: 310px;
+  left: 30px;
+  color: #50657d;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transform: none;
 }
 
 #y-axis {
   display: grid;
-  grid-template-rows: repeat(20, 1fr); /* 适配网格大小，20为最大值 */
+  grid-template-rows: repeat(20, 1fr);
   position: absolute;
-  top: 10px; /* 与网格顶部对齐 */
-  left: -30px; /* 与网格左侧距离 */
-  height: 300px; /* 高度动态适配 */
-  width: 20px; /* 标签宽度 */
+  top: 10px;
+  left: -30px;
+  height: 300px;
+  width: 20px;
+  color: #50657d;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transform: none;
+}
+
+@media only screen and (max-width: 900px) {
+  .interactive-panel {
+    flex-direction: column;
+    align-items: center;
+  }
 }
