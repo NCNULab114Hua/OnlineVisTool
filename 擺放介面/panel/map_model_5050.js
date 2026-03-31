@@ -1365,6 +1365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     generationData.forEach(sensor => {
       const index = sensor.y * gridSize + sensor.x;
       const cell = cells[index];
+      if (!cell) return;
       cell.classList.add('sensor');
       sensorCount++;
       sensors.push(sensor);
@@ -1682,8 +1683,8 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < cells.length; i++) {
       if (cells[i].classList.contains('sensor')) {
 
-        const x = i % mapSize;
-        const y = Math.floor(i / mapSize);
+        const x = i % gridSize;
+        const y = Math.floor(i / gridSize);
         
 
         currentState.push({ x: x, y: y }); 
@@ -1702,11 +1703,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // 切換下拉選單時載入對應的預設地圖。
   solutionDropdown.addEventListener('change', function () {
     const selectedValue = parseInt(this.value);
+    historyStack = [];
+    currentGeneration = 0;
+    generationSlider.value = 1;
+    currentGenerationDisplay.textContent = '1';
     limitThreshold = [];
     generations = {};
 
     if (selectedValue === 1 || selectedValue === 2 || selectedValue === 3){
       gridSize = 50;
+      mapSize = 50;
       sensingRange = 5;
       connectDistance = 8;
 
@@ -1873,8 +1879,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     mapSize = newSize;
+    gridSize = newSize;
     connectDistance = 5;
     sensingRange = 5;
+    historyStack = [];
+    currentGeneration = 0;
+    generationSlider.value = 1;
+    currentGenerationDisplay.textContent = '1';
     
 
     limitThreshold = [];
