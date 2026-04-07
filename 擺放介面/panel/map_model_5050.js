@@ -1788,10 +1788,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const finalContent = outputChunks.join('\n');
     const blob = new Blob([finalContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
+    const sensorFileLabel = currentSensors.length === 1 ? 'sensor' : 'sensors';
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `MapOutput.epin`;
+    a.download = `map_${mapSize}x${mapSize}_${currentSensors.length}_${sensorFileLabel}.epin`;
     document.body.appendChild(a);
     a.click();
     
