@@ -1,0 +1,315 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+}
+
+.interactive-panel {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: clamp(2.4rem, 5vw, 4.8rem);
+  min-height: 200px;
+  padding: 0.8rem 0.35rem;
+  width: 100%;
+  margin: 0;
+}
+
+.clickable-box {
+  width: 340px;
+  height: 340px;
+  border: 1px solid rgba(23, 51, 83, 0.22);
+  border-radius: 0;
+  display: grid;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 18px 35px rgba(28, 52, 88, 0.12);
+}
+
+.status-bar {
+  width: 132px;
+  min-height: 0;
+  padding: 8px 7px 8px;
+  position: relative;
+  border: 1px solid rgba(23, 51, 83, 0.2);
+  border-radius: 0;
+  display: inline-flex;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.52),
+    0 10px 24px rgba(28, 52, 88, 0.08);
+}
+
+.game-level .status-bar {
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%) !important;
+}
+
+.signal-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 3px;
+  width: 100%;
+}
+
+.signal-legend-title {
+  padding-bottom: 4px;
+  border-bottom: 2px dashed rgba(49, 85, 125, 0.18);
+  color: #35506f;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.signal-legend-item {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+}
+
+.signal-legend-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(49, 85, 125, 0.22);
+  background: #fbfdff;
+  color: #47627f;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.signal-legend-icon img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.signal-legend-icon.empty {
+  background: #f3f8fc;
+}
+
+.signal-legend-label {
+  color: #38506a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+select {
+  padding: 5px;
+}
+
+.label-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sensor-box {
+  width: 20px;
+  height: 20px;
+  background-color: #d6edf1;
+  background-image: url('../image/signal.svg');
+  background-size: 90%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid rgba(34, 52, 74, 0.8);
+}
+
+.dissatisfy-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(34, 52, 74, 0.8);
+  background: linear-gradient(
+    to bottom left,
+    transparent 45%,
+    red 50%,
+    transparent 55%
+  );
+  box-sizing: border-box;
+}
+
+.caption {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+.grid-cell {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.92);
+  box-sizing: border-box;
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(10, 28, 52, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.grid-cell:hover {
+  background-color: #f3f9ff;
+}
+
+.cell-entity {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cell-entity.eating {
+  animation: fish-eat-wiggle 0.22s ease-in-out 0s 8 alternate;
+}
+
+.sensor {
+  background-color: #d6edf1;
+}
+
+.relay-node {
+  cursor: default;
+}
+
+.relay-distance-badge {
+  position: absolute;
+  top: 8%;
+  right: 6%;
+  min-width: 1.2em;
+  height: 1.2em;
+  padding: 0 0.18em;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 251, 239, 0.95);
+  border: 1px solid rgba(65, 53, 74, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #43374a;
+  font-size: clamp(9px, 0.72rem, 12px);
+  font-weight: 800;
+  line-height: 1;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.inactive-sensor {
+  filter: grayscale(1) saturate(0.2) opacity(0.78);
+}
+
+.inactive-sensor .cell-entity {
+  filter: grayscale(1) saturate(0.15) opacity(0.76);
+}
+
+.dissatisfy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom left, transparent 45%, red 50%, transparent 55%);
+  pointer-events: none;
+}
+
+.dissatisfy {
+  position: relative;
+}
+
+#tooltip {
+  position: absolute;
+  display: none;
+  background-color: rgba(13, 22, 35, 0.82);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 0;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+#x-axis {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  margin-top: 5px;
+  position: absolute;
+  top: 350px;
+  left: 30px;
+  color: #50657d;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transform: none;
+}
+
+#y-axis {
+  display: grid;
+  grid-template-rows: repeat(20, 1fr);
+  position: absolute;
+  top: 10px;
+  left: -30px;
+  height: 340px;
+  width: 20px;
+  color: #50657d;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transform: none;
+}
+
+.connection-line {
+  position: absolute;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(255, 99, 146, 0.9), rgba(56, 171, 255, 0.95));
+  transform-origin: top left;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(56, 171, 255, 0.35);
+}
+
+@keyframes fish-eat-wiggle {
+  from {
+    transform: translateX(-2%) scale(0.98) rotate(-4deg);
+  }
+  to {
+    transform: translateX(2%) scale(1.02) rotate(4deg);
+  }
+}
+
+.inactive-connection-line {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(126, 135, 148, 0.85) 0 10px,
+    rgba(196, 202, 211, 0.55) 10px 18px
+  );
+  box-shadow: none;
+  opacity: 0.72;
+}
+
+@media only screen and (max-width: 900px) {
+  .interactive-panel {
+    flex-direction: column;
+    align-items: center;
+  }
+}
