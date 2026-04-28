@@ -31,6 +31,27 @@ body {
     0 18px 35px rgba(28, 52, 88, 0.12);
 }
 
+.clickable-box,
+.clickable-box *,
+.status-bar,
+.status-bar *,
+#x-axis,
+#x-axis *,
+#y-axis,
+#y-axis *,
+.connection-line {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.clickable-box img,
+.status-bar img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 .status-bar {
   width: 132px;
   min-height: 0;
