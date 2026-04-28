@@ -36,11 +36,13 @@ document.addEventListener('DOMContentLoaded', function () {
   let audioContext = null;
   let crunchAudioTemplate = null;
   let iceAudioTemplate = null;
+  let fireAudioTemplate = null;
   let crunchAudioTimeouts = [];
   let activeCrunchAudios = [];
 
   const chipCrunchAudioPath = './audio/chip-crunch.wav';
-  const iceMakeAudioPath = './audio/ice make.mp3';
+  const iceMakeAudioPath = './audio/ice sound.wav';
+  const fireSoundAudioPath = './audio/fire sound.wav';
   const skinStorageKey = 'meowtopia-skin-preferences';
   const catSkinAssets = {
     kuro: {
@@ -770,6 +772,20 @@ document.addEventListener('DOMContentLoaded', function () {
     return iceAudioTemplate;
   }
 
+  function getFireAudioTemplate() {
+    if (typeof Audio === 'undefined') {
+      return null;
+    }
+
+    if (!fireAudioTemplate) {
+      fireAudioTemplate = new Audio(fireSoundAudioPath);
+      fireAudioTemplate.preload = 'auto';
+      fireAudioTemplate.load();
+    }
+
+    return fireAudioTemplate;
+  }
+
   function removeTrackedCrunchAudio(audio) {
     activeCrunchAudios = activeCrunchAudios.filter(item => item !== audio);
   }
@@ -917,6 +933,54 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function playFireSequence(durationMs = 2000) {
+    const template = getFireAudioTemplate();
+    const clipDurationMs = Math.min(2200, Math.max(900, durationMs));
+
+    if (template) {
+      const fireAudio = template.cloneNode(true);
+      fireAudio.preload = 'auto';
+      fireAudio.currentTime = 0;
+      fireAudio.volume = 0.82;
+      fireAudio.playbackRate = 1;
+      activeCrunchAudios.push(fireAudio);
+
+      const playPromise = fireAudio.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          fireAudio.pause();
+          fireAudio.currentTime = 0;
+          removeTrackedCrunchAudio(fireAudio);
+          playSyntheticFireSequence(durationMs);
+        });
+      }
+
+      const fadeStartMs = Math.max(0, clipDurationMs - 360);
+      const fadeTimeoutId = window.setTimeout(() => {
+        const startVolume = fireAudio.volume;
+        const fadeSteps = 6;
+
+        for (let i = 0; i < fadeSteps; i++) {
+          const stepTimeoutId = window.setTimeout(() => {
+            fireAudio.volume = Math.max(0, startVolume * (1 - (i + 1) / fadeSteps));
+          }, i * 55);
+          crunchAudioTimeouts.push(stepTimeoutId);
+        }
+      }, fadeStartMs);
+      crunchAudioTimeouts.push(fadeTimeoutId);
+
+      const stopTimeoutId = window.setTimeout(() => {
+        fireAudio.pause();
+        fireAudio.currentTime = 0;
+        removeTrackedCrunchAudio(fireAudio);
+      }, clipDurationMs);
+      crunchAudioTimeouts.push(stopTimeoutId);
+      return;
+    }
+
+    playSyntheticFireSequence(durationMs);
+  }
+
+  function playSyntheticFireSequence(durationMs = 2000) {
     const ctx = getAudioContext();
     if (!ctx) {
       return;
@@ -989,44 +1053,7 @@ document.addEventListener('DOMContentLoaded', function () {
     overtone.stop(startTime + duration);
   }
 
-  function playIceSequence(durationMs = 2000) {
-    const template = getIceAudioTemplate();
-    if (template) {
-      [0, 360, 760, 1180].forEach((startAtMs, index) => {
-        const timeoutId = window.setTimeout(() => {
-          const iceAudio = template.cloneNode(true);
-          iceAudio.volume = Math.max(0.3, 0.52 - index * 0.055);
-          iceAudio.playbackRate = 1.28 + index * 0.04;
-          iceAudio.currentTime = 0;
-          activeCrunchAudios.push(iceAudio);
-          iceAudio.play()
-            .then(() => {
-              const fadeTimeoutId = window.setTimeout(() => {
-                const fadeSteps = 4;
-                const startVolume = iceAudio.volume;
-                for (let i = 0; i < fadeSteps; i++) {
-                  window.setTimeout(() => {
-                    iceAudio.volume = Math.max(0, startVolume * (1 - (i + 1) / fadeSteps));
-                  }, i * 18);
-                }
-              }, 250);
-              crunchAudioTimeouts.push(fadeTimeoutId);
-
-              const clearTimeoutId = window.setTimeout(() => {
-                iceAudio.pause();
-                iceAudio.currentTime = 0;
-                removeTrackedCrunchAudio(iceAudio);
-              }, 420);
-              crunchAudioTimeouts.push(clearTimeoutId);
-            })
-            .catch(() => {
-              removeTrackedCrunchAudio(iceAudio);
-            });
-        }, Math.min(durationMs - 450, startAtMs));
-        crunchAudioTimeouts.push(timeoutId);
-      });
-    }
-
+  function playSyntheticIceSequence(durationMs = 2000) {
     const ctx = getAudioContext();
     if (!ctx) {
       return;
@@ -1040,6 +1067,54 @@ document.addEventListener('DOMContentLoaded', function () {
       }, Math.min(durationMs - 120, time));
       crunchAudioTimeouts.push(timeoutId);
     });
+  }
+
+  function playIceSequence(durationMs = 2000) {
+    const template = getIceAudioTemplate();
+    if (!template) {
+      playSyntheticIceSequence(durationMs);
+      return;
+    }
+
+    const iceAudio = template.cloneNode(true);
+    const clipDurationMs = Math.min(2300, Math.max(900, durationMs));
+
+    iceAudio.preload = 'auto';
+    iceAudio.volume = 0.78;
+    iceAudio.playbackRate = 1;
+    iceAudio.currentTime = 0;
+    activeCrunchAudios.push(iceAudio);
+
+    const playPromise = iceAudio.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        iceAudio.pause();
+        iceAudio.currentTime = 0;
+        removeTrackedCrunchAudio(iceAudio);
+        playSyntheticIceSequence(durationMs);
+      });
+    }
+
+    const fadeStartMs = Math.max(0, clipDurationMs - 360);
+    const fadeTimeoutId = window.setTimeout(() => {
+      const fadeSteps = 6;
+      const startVolume = iceAudio.volume;
+
+      for (let i = 0; i < fadeSteps; i++) {
+        const stepTimeoutId = window.setTimeout(() => {
+          iceAudio.volume = Math.max(0, startVolume * (1 - (i + 1) / fadeSteps));
+        }, i * 55);
+        crunchAudioTimeouts.push(stepTimeoutId);
+      }
+    }, fadeStartMs);
+    crunchAudioTimeouts.push(fadeTimeoutId);
+
+    const stopTimeoutId = window.setTimeout(() => {
+      iceAudio.pause();
+      iceAudio.currentTime = 0;
+      removeTrackedCrunchAudio(iceAudio);
+    }, clipDurationMs);
+    crunchAudioTimeouts.push(stopTimeoutId);
   }
 
   function scheduleCrunchAudioBite(startAtMs, options = {}, onFailure = null) {
