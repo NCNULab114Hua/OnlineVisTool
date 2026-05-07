@@ -137,7 +137,7 @@ select {
   left: 0;
   height: 100%;
   width: 0%; /* 初始寬度為 0% */
-  background: rgb(66, 190, 66); /* 綠色漸變到白色 */
+  background: rgb(66, 190, 66); /* 綠色進度條 */
   transition: width 0.1s ease-in-out; /* 平滑動畫 */
 }
 
@@ -205,7 +205,7 @@ select {
 
 /* 紅白顯示歷史最佳 */
 .bit-best {
-  background-color: #15803d;
+  background-color: #dc2626;
   box-shadow: 0 0 0 0.5px black;
 }
 .bit-best-not-selected {
@@ -214,18 +214,18 @@ select {
 }
 /* 綠白顯示當代最佳 */
 .bit-Lbest {
-  background-color: #86efac;
+  background-color: #fca5a5;
   box-shadow: 0 0 0 0.5px black;
 }
 
 /* 最差粒子（藍白） */
 .bit-worst {
-  background-color: #fdba74;
+  background-color: #93c5fd;
   box-shadow: 0 0 0 0.5px white;
 }
 
 .bit-global-worst {
-  background-color: #c2410c;
+  background-color: #1d4ed8;
   box-shadow: 0 0 0 0.5px white;
 }
 
@@ -429,6 +429,16 @@ select {
 
 .button-panel-stock {
   flex-wrap: wrap;
+}
+
+.control-panel-stock,
+.control-panel-stock *,
+.button-panel-stock,
+.button-panel-stock * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .particle-sort-control-stock {
