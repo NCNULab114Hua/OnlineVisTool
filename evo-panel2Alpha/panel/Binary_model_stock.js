@@ -414,21 +414,43 @@
     DynVisBox.classList.toggle('dragover', isActive);
   }
 
-  function getSortedParticles(particles) {
-    const particlesWithIndex = particles.map((particle, originalIndex) => ({
+  function getSortedParticleRows(generation, particles) {
+    const rows = particles.map((particle, originalIndex) => ({
+      type: 'particle',
+      label: originalIndex + 1,
       particle,
       originalIndex,
+      fitness: particle.fitness,
+      originalOrder: originalIndex,
     }));
 
+    rows.push({
+      type: 'global-best',
+      label: 'GB',
+      particle: historyBestParticle[generation].particles,
+      originalIndex: -2,
+      fitness: historyBestParticle[generation].bestFitness,
+      originalOrder: particles.length,
+    });
+
+    rows.push({
+      type: 'global-worst',
+      label: 'GW',
+      particle: historyWorstParticle[generation].particles,
+      originalIndex: -3,
+      fitness: historyWorstParticle[generation].bestFitness,
+      originalOrder: particles.length + 1,
+    });
+
     if (particleSortMode === 'fitness-asc') {
-      return particlesWithIndex.sort((a, b) => a.particle.fitness - b.particle.fitness);
+      return rows.sort((a, b) => a.fitness - b.fitness || a.originalOrder - b.originalOrder);
     }
 
     if (particleSortMode === 'fitness-desc') {
-      return particlesWithIndex.sort((a, b) => b.particle.fitness - a.particle.fitness);
+      return rows.sort((a, b) => b.fitness - a.fitness || a.originalOrder - b.originalOrder);
     }
 
-    return particlesWithIndex;
+    return rows;
   }
   // ?湔?脣漲璇??澆?憿舐內??generation ??
   function updateProgressBar(generation) {
@@ -636,16 +658,18 @@
       DynVisBox.appendChild(overlay);
 
     } else {
-      const tmp_row = generations[currentGeneration + 1].particles.length;
+      const currentGen = currentGeneration + 1;
       // 閮剖? Grid 璅??
       DynVisBox.style.gridTemplateColumns = `repeat(${bitCount}, 1fr)`;
-      DynVisBox.style.gridTemplateRows = `repeat(${tmp_row + 2}, 1fr)`;
+      const genData = generations[currentGen];
+      const sortedRows = getSortedParticleRows(currentGen, genData.particles);
+      const rowCount = sortedRows.length;
+      const rowHeight = 492.0 / rowCount;
+      DynVisBox.style.gridTemplateRows = `repeat(${rowCount}, 1fr)`;
       // **?曉?嗅?隞???雿喟?摮?*
-      const genData = generations[currentGeneration + 1];
       //?湔xy頠?
-      const sortedParticles = getSortedParticles(genData.particles);
-      const particleAxisLabels = sortedParticles.map((particleItem) => particleItem.originalIndex + 1);
-      updateAxes(bitCount, tmp_row, particleAxisLabels);
+      const particleAxisLabels = sortedRows.map((row) => row.label);
+      updateAxes(bitCount, rowCount, particleAxisLabels);
       // **?曉?嗡誨??雿喳??撌桃?摮?*
       let bestParticle = genData.particles[0];
       let worstParticle = genData.particles[0];
@@ -657,18 +681,16 @@
         worstParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
       }
       
-      for (let i = 0; i < tmp_row; i++) {
-        const particleItem = sortedParticles[i];
-        const generationBits = particleItem.particle;
+      sortedRows.forEach((row, i) => {
+        const generationBits = row.particle;
         //?湔Fitness
         const fitnessLabel = document.createElement('div');
         fitnessLabel.style.display = 'flex';
         fitnessLabel.style.alignItems = 'center'; 
         fitnessLabel.style.justifyContent = 'right'; 
         fitnessLabel.style.fontSize = '10px';
-        const tmp_height = 492.0 / (tmp_row + 2);
-        fitnessLabel.style.height = `${tmp_height}px`;
-        fitnessLabel.textContent = generationBits.fitness; // Fitness ?詨?
+        fitnessLabel.style.height = `${rowHeight}px`;
+        fitnessLabel.textContent = row.fitness; // Fitness ?詨?
         fitnessContainer.appendChild(fitnessLabel);
 
         generationBits.bits.forEach((bit, bitIndex) => {
@@ -676,10 +698,14 @@
           cell.classList.add("bit-cell");
           // 閮剖?dataset嚗Ⅱ靽???bit-cell ?批摰鞈?
           cell.setAttribute("data-bit-index", bitIndex); // bit ?摮?
-          cell.setAttribute("data-generation", currentGeneration + 1);  // 閰淨it ?撅祉?銝誨
-          cell.setAttribute("data-particle-index", particleItem.originalIndex);  // -1銵函內?嗡誨?雿喋?2銵函內甇瑕?雿喋??迤?湔銵函內?嗡誨??摮?
+          cell.setAttribute("data-generation", currentGen);  // 閰淨it ?撅祉?銝誨
+          cell.setAttribute("data-particle-index", row.originalIndex);  // -1銵函內?嗡誨?雿喋?2銵函內甇瑕?雿喋??迤?湔銵函內?嗡誨??摮?
 
-          if (generationBits.fitness == bestParticle.fitness){
+          if (row.type === 'global-best') {
+            cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
+          } else if (row.type === 'global-worst') {
+            cell.classList.add(bit.selected ? "bit-global-worst" : "bit-current-not-selected");
+          } else if (generationBits.fitness == bestParticle.fitness){
             cell.classList.add(bit.selected ? "bit-Lbest" : "bit-best-not-selected");
           } else if (generationBits.fitness == worstParticle.fitness){
             cell.classList.add(bit.selected ? "bit-worst" : "bit-current-not-selected");
@@ -693,78 +719,12 @@
         const infoDiv = document.createElement("div");
         infoDiv.textContent = generationBits.particleInfo;
         infoDiv.style.position = "absolute";
-        infoDiv.style.top = `${(i / (tmp_row + 2)) * 100}%`;
+        infoDiv.style.top = `${(i / rowCount) * 100}%`;
         infoDiv.style.left = "15px"; 
         infoDiv.style.color = "black"; // 蝣箔?摮?憿皜
         infoDiv.style.fontSize = "12px"; // ?踹?摮??之
         overlay.appendChild(infoDiv);
-      }
-
-      //?湔?雿蚶itness
-      const fitnessLabel = document.createElement('div');
-      fitnessLabel.style.display = 'flex';
-      fitnessLabel.style.alignItems = 'center';
-      fitnessLabel.style.justifyContent = 'right';
-      fitnessLabel.style.fontSize = '10px';
-      const tmp_height = 492.0 / (tmp_row + 2);
-      fitnessLabel.style.height = `${tmp_height}px`;
-      fitnessLabel.textContent = historyBestParticle[currentGeneration + 1].bestFitness;
-      fitnessContainer.appendChild(fitnessLabel);
-
-      const worstFitnessLabel = document.createElement('div');
-      worstFitnessLabel.style.display = 'flex';
-      worstFitnessLabel.style.alignItems = 'center';
-      worstFitnessLabel.style.justifyContent = 'right';
-      worstFitnessLabel.style.fontSize = '10px';
-      worstFitnessLabel.style.height = `${tmp_height}px`;
-      worstFitnessLabel.textContent = historyWorstParticle[currentGeneration + 1].bestFitness;
-      fitnessContainer.appendChild(worstFitnessLabel);
-
-      // ?甇瑕?雿唾圾 (?銝銝??蝝)
-      if (bestOverallSolution) {
-        bestOverallSolution.forEach((bit, bitIndex) => {
-          const cell = document.createElement("div");
-          cell.classList.add("bit-cell");
-          // 閮剖?dataset嚗Ⅱ靽???bit-cell ?批摰鞈?
-          cell.setAttribute("data-bit-index", bitIndex); // bit ?摮?
-          cell.setAttribute("data-generation", currentGeneration + 1);  // 閰淨it ?撅祉?銝誨
-          cell.setAttribute("data-particle-index", -2);  // -1銵函內?嗡誨?雿喋?2銵函內甇瑕?雿喋迤?湔銵函內?嗡誨??摮?
-
-          cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
-          DynVisBox.appendChild(cell);
-        });
-      }
-
-      if (worstOverallSolution) {
-        worstOverallSolution.forEach((bit, bitIndex) => {
-          const cell = document.createElement("div");
-          cell.classList.add("bit-cell");
-          cell.setAttribute("data-bit-index", bitIndex);
-          cell.setAttribute("data-generation", currentGeneration + 1);
-          cell.setAttribute("data-particle-index", -3);
-
-          cell.classList.add(bit.selected ? "bit-global-worst" : "bit-current-not-selected");
-          DynVisBox.appendChild(cell);
-        });
-      }
-      // 甇瑕?雿唾圾?＊蝷箄?閮?
-      const infoDiv = document.createElement("div");
-      infoDiv.textContent = historyBestParticle[currentGeneration + 1].particles.particleInfo;
-      infoDiv.style.position = "absolute";
-      infoDiv.style.top = `${(tmp_row / (tmp_row + 2)) * 100}%`;
-      infoDiv.style.left = "15px"; 
-      infoDiv.style.color = "black"; // 蝣箔?摮?憿皜
-      infoDiv.style.fontSize = "12px"; // ?踹?摮??之
-      overlay.appendChild(infoDiv);
-
-      const worstInfoDiv = document.createElement("div");
-      worstInfoDiv.textContent = historyWorstParticle[currentGeneration + 1].particles.particleInfo;
-      worstInfoDiv.style.position = "absolute";
-      worstInfoDiv.style.top = `${((tmp_row + 1) / (tmp_row + 2)) * 100}%`;
-      worstInfoDiv.style.left = "15px";
-      worstInfoDiv.style.color = "black";
-      worstInfoDiv.style.fontSize = "12px";
-      overlay.appendChild(worstInfoDiv);
+      });
 
       // ?湔鞈??蚤ynVisBox
       DynVisBox.appendChild(overlay);
@@ -832,28 +792,10 @@
         yLabel.style.alignItems = 'center'; // 霈摮?澆??批??渡蔭銝?
         yLabel.style.justifyContent = 'right'; // 蝣箔??詨??
         yLabel.style.fontSize = '10px';
-        yLabel.style.height = `${492.0 / (genCount + 2)}px`; // 蝣箔???DynVisBox ?澆???摨虫???(??寞?撖阡?憭批?隤踵)
+        yLabel.style.height = `${492.0 / genCount}px`; // 蝣箔???DynVisBox ?澆???摨虫???(??寞?撖阡?憭批?隤踵)
         yLabel.textContent = particleAxisLabels[i] || i + 1; // ?曹?敺銝???
         yAxis.appendChild(yLabel);
       }
-      // GB璅內
-      const yLabel = document.createElement('div');
-      yLabel.style.display = 'flex';
-      yLabel.style.alignItems = 'center'; // 霈摮?澆??批??渡蔭銝?
-      yLabel.style.justifyContent = 'right'; // 蝣箔??詨??
-      yLabel.style.fontSize = '10px';
-      yLabel.style.height = `${492.0 / (genCount + 2)}px`; // 蝣箔???DynVisBox ?澆???摨虫???(??寞?撖阡?憭批?隤踵)
-      yLabel.textContent = "GB"; // ?曹?敺銝???
-      yAxis.appendChild(yLabel);
-
-      const gwLabel = document.createElement('div');
-      gwLabel.style.display = 'flex';
-      gwLabel.style.alignItems = 'center';
-      gwLabel.style.justifyContent = 'right';
-      gwLabel.style.fontSize = '10px';
-      gwLabel.style.height = `${492.0 / (genCount + 2)}px`;
-      gwLabel.textContent = "GW";
-      yAxis.appendChild(gwLabel);
     }
   }
   // 瑼?霈??
