@@ -568,12 +568,6 @@
     margin-bottom: 18px;
   }
 
-  #heatmap_view,
-  #heatmap_view select,
-  #heatmap_view button {
-    border-radius: 0;
-  }
-
   .heatmap-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
@@ -584,7 +578,7 @@
   .heatmap-canvas-frame {
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 0;
+    border-radius: 8px;
     padding: 14px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
   }
@@ -621,7 +615,7 @@
 
   .heatmap-gradient {
     height: 12px;
-    border-radius: 0;
+    border-radius: 999px;
     background: linear-gradient(90deg, #0f766e 0%, #facc15 50%, #dc2626 100%);
     border: 1px solid #cbd5e1;
   }
@@ -629,7 +623,7 @@
   .heatmap-preview {
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 0;
+    border-radius: 8px;
     padding: 16px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
   }
@@ -645,7 +639,7 @@
     padding: 10px 12px;
     border: 1px solid #67e8f9;
     border-left: 5px solid #06b6d4;
-    border-radius: 0;
+    border-radius: 8px;
     background: #ecfeff;
     color: #0f172a;
   }
@@ -678,7 +672,7 @@
     gap: 8px;
     align-items: center;
     padding: 8px 10px;
-    border-radius: 0;
+    border-radius: 8px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     font-family: 'JetBrains Mono', monospace;
@@ -694,7 +688,7 @@
     width: 100%;
     height: 130px;
     border: 1px solid #e2e8f0;
-    border-radius: 0;
+    border-radius: 8px;
     background: #ffffff;
     margin-bottom: 14px;
   }
@@ -3348,8 +3342,13 @@
   function syncHeatmapFunctionSelect() {
     const source = document.getElementById("FunctionName");
     const target = document.getElementById("heatmapFunctionName");
-    target.innerHTML = source.innerHTML;
-    target.value = source.value;
+    target.innerHTML = "";
+    const ctrlSOption = [...source.options].find(option => option.value === "ctrlS");
+    const option = document.createElement("option");
+    option.value = "ctrlS";
+    option.textContent = ctrlSOption ? ctrlSOption.textContent : "ctrl-S";
+    target.appendChild(option);
+    target.value = "ctrlS";
   }
 
   function activateTab(tab) {
@@ -3379,6 +3378,11 @@
 
     if (isHeatmap) {
       syncHeatmapFunctionSelect();
+      const source = document.getElementById("FunctionName");
+      if (source.value !== "ctrlS") {
+        source.value = "ctrlS";
+        source.dispatchEvent(new Event("change"));
+      }
       if (!heatmapState.built || heatmapState.targetKey !== getHeatmapTargetKey()) {
         setTimeout(buildHeatmap, 30);
       }
