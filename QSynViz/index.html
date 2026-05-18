@@ -560,6 +560,210 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 
+  .heatmap-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  #heatmap_view,
+  #heatmap_view select,
+  #heatmap_view button {
+    border-radius: 0;
+  }
+
+  .heatmap-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .heatmap-canvas-frame {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+
+  #heatmapCanvas {
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 1 / 1;
+    display: block;
+    border: 1px solid #94a3b8;
+    background: #f8fafc;
+    image-rendering: pixelated;
+    cursor: crosshair;
+    border-radius: 0;
+  }
+
+  .heatmap-axis-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .heatmap-legend {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    min-width: 220px;
+  }
+
+  .heatmap-gradient {
+    height: 12px;
+    border-radius: 0;
+    background: linear-gradient(90deg, #0f766e 0%, #facc15 50%, #dc2626 100%);
+    border: 1px solid #cbd5e1;
+  }
+
+  .heatmap-preview {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+
+  .heatmap-preview-title {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+  }
+
+  .heatmap-best-box {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid #67e8f9;
+    border-left: 5px solid #06b6d4;
+    border-radius: 0;
+    background: #ecfeff;
+    color: #0f172a;
+  }
+
+  .heatmap-best-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0e7490;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+
+  .heatmap-value {
+    font-family: 'JetBrains Mono', monospace;
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .heatmap-layer-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .heatmap-layer-pill {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 0;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .heatmap-layer-depth {
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  #heatmapCircuitPreview {
+    width: 100%;
+    height: 130px;
+    border: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: #ffffff;
+    margin-bottom: 14px;
+  }
+
+  .heatmap-empty {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .heatmap-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .heatmap-mode-panel {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #cbd5e1;
+  }
+
+  .heatmap-mode-label {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .heatmap-mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .heatmap-mode-button {
+    background: #e2e8f0;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+  }
+
+  .heatmap-mode-button.active {
+    background: #0f766e;
+    color: #ffffff;
+    border-color: #0f766e;
+  }
+
+  .heatmap-mode-button:hover {
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.22);
+  }
+
+  .heatmap-zoom-status {
+    color: #475569;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .heatmap-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .feature-button {
+      padding: 14px 18px;
+    }
+  }
+
   #circuitCanvas, .draggable-gate {
     touch-action: none; /* 禁止預設的觸控行為 (滾動/縮放) */
   }
@@ -583,10 +787,11 @@
       <div class="feature-button active" data-tab="function">Function Viewer</div>
       <div class="feature-button" data-tab="editor">Circuit Editor</div>
       <div class="feature-button" data-tab="analyzer">Dynamic Analysis</div>
+      <div class="feature-button" data-tab="heatmap">Layer Heatmap</div>
     </div>
 
     <div class="content-area">
-      <div class="section">
+      <div id="target_function" class="section">
         <div class="section-title">🎯 Target Function</div>
         <div class="controls-row">
           <div class="control-group">
@@ -611,6 +816,72 @@
             <label for="circuitDepth">Circuit Depth:</label>
             <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 80px;">
             <button onclick="setCircuitDepth()" class="btn-success">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="heatmap_view" class="section" style="display: none;">
+        <div class="section-title">Two-Stage Circuit Landscape Heatmap</div>
+        <div class="heatmap-toolbar">
+          <div class="control-group">
+            <label for="heatmapFunctionName">Heatmap Target:</label>
+            <select id="heatmapFunctionName"></select>
+          </div>
+          <div class="control-group">
+            <label for="heatmapOrdering">Axis Order:</label>
+            <select id="heatmapOrdering">
+              <option value="structural">Structural Gray</option>
+              <option value="structuralSimilarity">Structural Similarity</option>
+              <option value="semanticSimilarity">Semantic Similarity</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="heatmapMetric">Metric:</label>
+            <select id="heatmapMetric">
+              <option value="hs">Hilbert-Schmidt Distance</option>
+            </select>
+          </div>
+          <button id="heatmapRebuild" class="btn-success">Rebuild</button>
+          <button id="heatmapResetZoom" class="btn-secondary">Reset Zoom</button>
+          <button id="heatmapDownload" class="btn-secondary">Download Heatmap</button>
+          <div class="heatmap-legend">
+            <div class="heatmap-gradient"></div>
+            <span id="heatmapRange">0.000 - 1.000</span>
+          </div>
+          <span id="heatmapZoomStatus" class="heatmap-zoom-status">Full view</span>
+        </div>
+
+        <div class="heatmap-layout">
+          <div class="heatmap-canvas-frame">
+            <canvas id="heatmapCanvas" width="324" height="324"></canvas>
+            <div class="heatmap-axis-caption">
+              <span>Y: depth 1-2 prefix</span>
+              <span>X: depth 3-4 suffix</span>
+            </div>
+          </div>
+
+          <div class="heatmap-preview">
+            <div class="heatmap-preview-title">Selected circuit</div>
+            <div id="heatmapBestBox" class="heatmap-best-box">
+              <div class="heatmap-best-label">Best solution</div>
+              <div id="heatmapBestValue" class="heatmap-value">Build the heatmap first</div>
+            </div>
+            <div id="heatmapSelectedValue" class="heatmap-value">Move over a cell</div>
+            <div id="heatmapLayerList" class="heatmap-layer-list">
+              <div class="heatmap-empty">Each cell is one legal depth-4 circuit composed from two-qubit layers.</div>
+            </div>
+            <canvas id="heatmapCircuitPreview" width="280" height="130"></canvas>
+            <div class="heatmap-actions">
+              <button id="heatmapShowBest" class="btn-success btn-small" disabled>Show Best</button>
+              <button id="heatmapLoadCircuit" class="btn-secondary btn-small" disabled>Load in Editor</button>
+            </div>
+            <div class="heatmap-mode-panel">
+              <div class="heatmap-mode-label">Drag Mode</div>
+              <div class="heatmap-mode-toggle">
+                <button id="heatmapModeZoom" class="heatmap-mode-button active btn-small" data-mode="zoom">Zoom Area</button>
+                <button id="heatmapModePan" class="heatmap-mode-button btn-small" data-mode="pan">Pan View</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -700,7 +971,7 @@
         </div>
       </div>
 
-      <div class="section">
+      <div id="circuit_diagram_section" class="section">
         <div class="section-title">
           🔧 Circuit Diagram
           <div class="tooltip-container">
@@ -1449,6 +1720,26 @@
   const ctx = canvas.getContext('2d');
   let fitnessChart;
   let circuitData = null;
+  let heatmapState = {
+    built: false,
+    targetKey: "",
+    axis: [],
+    values: [],
+    min: 0,
+    max: 1,
+    best: null,
+    bestCells: [],
+    zoom: null,
+    dragStart: null,
+    dragEnd: null,
+    panStart: null,
+    panOrigin: null,
+    dragMode: "zoom",
+    isDragging: false,
+    isPanning: false,
+    selected: null,
+    imageData: null
+  };
 
   updateFitnessChart();
   renderCircuit(1);
@@ -2353,25 +2644,835 @@
       draggedGate = e.target.dataset.gate;
     });
   });
+
+  function makeHeatmapLayers() {
+    const oneQ = [
+      { id: 0, label: "I" },
+      { id: 1, label: "H" },
+      { id: 2, label: "T" },
+      { id: 3, label: "Tdg" }
+    ];
+    const layers = [];
+
+    for (let q0 = 0; q0 < oneQ.length; q0++) {
+      const q1Order = (q0 % 2 === 0) ? oneQ : [...oneQ].reverse();
+      for (const q1 of q1Order) {
+        layers.push({
+          type: "single",
+          label: `${oneQ[q0].label}/${q1.label}`,
+          short: `${oneQ[q0].label}${q1.label}`,
+          circuit: [oneQ[q0].id, q1.id]
+        });
+      }
+    }
+
+    layers.push({ type: "cnot", label: "CNOT 0->1", short: "C01", circuit: [5, 4] });
+    layers.push({ type: "cnot", label: "CNOT 1->0", short: "C10", circuit: [4, 5] });
+    return layers;
+  }
+
+  function makeBaseHeatmapAxis() {
+    const layers = makeHeatmapLayers();
+    const axis = [];
+
+    for (let first = 0; first < layers.length; first++) {
+      const secondOrder = (first % 2 === 0) ? layers : [...layers].reverse();
+      for (const second of secondOrder) {
+        axis.push({
+          layers: [layers[first], second],
+          label: `${layers[first].short} | ${second.short}`
+        });
+      }
+    }
+
+    return axis;
+  }
+
+  function heatmapLayerFeature(layer, position) {
+    const f = new Array(22).fill(0);
+    const posOffset = position === 0 ? 0 : 8;
+
+    if (layer.type === "cnot") {
+      f[3]++;
+      f[posOffset + 3] = 1;
+      f[16 + position] = 1;
+      f[layer.short === "C01" ? 18 : 19] = 1;
+      return f;
+    }
+
+    for (let q = 0; q < 2; q++) {
+      const gate = layer.circuit[q];
+      f[gate]++;
+      f[posOffset + gate] = 1;
+      if (gate !== 0) f[20 + q] += 0.5;
+    }
+
+    if (layer.circuit[0] === layer.circuit[1]) {
+      f[4] += 0.5;
+    }
+    return f;
+  }
+
+  function heatmapAxisFeature(item) {
+    const feature = new Array(22).fill(0);
+    item.layers.forEach((layer, index) => {
+      const layerFeature = heatmapLayerFeature(layer, index);
+      for (let i = 0; i < feature.length; i++) {
+        feature[i] += layerFeature[i];
+      }
+    });
+
+    const q0 = item.layers.map(layer => layer.circuit[0]);
+    const q1 = item.layers.map(layer => layer.circuit[1]);
+    if ((q0[0] === 2 && q0[1] === 3) || (q0[0] === 3 && q0[1] === 2)) feature[5] += 1;
+    if ((q1[0] === 2 && q1[1] === 3) || (q1[0] === 3 && q1[1] === 2)) feature[6] += 1;
+    if (item.layers[0].type === item.layers[1].type) feature[7] += 0.5;
+    return feature;
+  }
+
+  function euclideanDistance(a, b) {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) {
+      const delta = a[i] - b[i];
+      sum += delta * delta;
+    }
+    return Math.sqrt(sum);
+  }
+
+  function greedySimilarityOrder(count, distanceAt) {
+    const used = new Uint8Array(count);
+    const order = [0];
+    used[0] = 1;
+
+    while (order.length < count) {
+      const current = order[order.length - 1];
+      let bestIndex = -1;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      for (let candidate = 0; candidate < count; candidate++) {
+        if (used[candidate]) continue;
+        const distance = distanceAt(current, candidate);
+        if (
+          distance < bestDistance ||
+          (Math.abs(distance - bestDistance) < 1e-12 && candidate < bestIndex)
+        ) {
+          bestDistance = distance;
+          bestIndex = candidate;
+        }
+      }
+
+      used[bestIndex] = 1;
+      order.push(bestIndex);
+    }
+
+    return order;
+  }
+
+  function orderHeatmapAxis(baseAxis, pairMatrices, mode) {
+    if (mode === "structuralSimilarity") {
+      const features = baseAxis.map(heatmapAxisFeature);
+      const order = greedySimilarityOrder(baseAxis.length, (a, b) => {
+        return euclideanDistance(features[a], features[b]);
+      });
+      return order.map(index => index);
+    }
+
+    if (mode === "semanticSimilarity") {
+      const order = greedySimilarityOrder(baseAxis.length, (a, b) => {
+        return heatmapFitness(pairMatrices[a], pairMatrices[b]);
+      });
+      return order.map(index => index);
+    }
+
+    return baseAxis.map((_, index) => index);
+  }
+
+  function matrixFromDeferred(deferredMat) {
+    const out = new Float64Array(32);
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const v = deferredMat[r][c].evaluate();
+        const idx = (r * 4 + c) * 2;
+        out[idx] = math.re(v);
+        out[idx + 1] = math.im(v);
+      }
+    }
+    return out;
+  }
+
+  function targetToFastMatrix() {
+    if (!Array.isArray(TargetArrat) || TargetArrat.length !== 4 || TargetArrat[0].length !== 4) {
+      return null;
+    }
+
+    const out = new Float64Array(32);
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const v = TargetArrat[r][c];
+        const idx = (r * 4 + c) * 2;
+        out[idx] = math.re(v);
+        out[idx + 1] = math.im(v);
+      }
+    }
+    return out;
+  }
+
+  function multiplyFast4(A, B) {
+    const out = new Float64Array(32);
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        let re = 0;
+        let im = 0;
+        for (let k = 0; k < 4; k++) {
+          const ai = (r * 4 + k) * 2;
+          const bi = (k * 4 + c) * 2;
+          const ar = A[ai];
+          const aiIm = A[ai + 1];
+          const br = B[bi];
+          const biIm = B[bi + 1];
+          re += ar * br - aiIm * biIm;
+          im += ar * biIm + aiIm * br;
+        }
+        const oi = (r * 4 + c) * 2;
+        out[oi] = re;
+        out[oi + 1] = im;
+      }
+    }
+    return out;
+  }
+
+  function heatmapFitness(U, V) {
+    let re = 0;
+    let im = 0;
+    for (let i = 0; i < 16; i++) {
+      const ui = i * 2;
+      const ur = U[ui];
+      const uIm = U[ui + 1];
+      const vr = V[ui];
+      const vIm = V[ui + 1];
+      re += ur * vr + uIm * vIm;
+      im += ur * vIm - uIm * vr;
+    }
+
+    const overlap = Math.sqrt(re * re + im * im) / 4;
+    return Math.max(0, Math.min(1, 1 - overlap));
+  }
+
+  function heatmapColor(value, min, max) {
+    const range = Math.max(1e-12, max - min);
+    const t = Math.max(0, Math.min(1, (value - min) / range));
+    const stops = [
+      [15, 118, 110],
+      [250, 204, 21],
+      [220, 38, 38]
+    ];
+    const scaled = t * 2;
+    const idx = Math.min(1, Math.floor(scaled));
+    const local = scaled - idx;
+    const a = stops[idx];
+    const b = stops[idx + 1];
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * local),
+      Math.round(a[1] + (b[1] - a[1]) * local),
+      Math.round(a[2] + (b[2] - a[2]) * local)
+    ];
+  }
+
+  function heatmapBestColor() {
+    return [0, 180, 255];
+  }
+
+  function buildLayerMatrix(layer) {
+    const circuit = [[layer.circuit[0]], [layer.circuit[1]]];
+    return matrixFromDeferred(checkerDeferred(circuit));
+  }
+
+  function buildHeatmap() {
+    const canvas = document.getElementById("heatmapCanvas");
+    const ctxHeatmap = canvas.getContext("2d");
+    const target = targetToFastMatrix();
+    if (!target) {
+      ctxHeatmap.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById("heatmapSelectedValue").innerText = "This heatmap is currently limited to 2-qubit targets.";
+      document.getElementById("heatmapLoadCircuit").disabled = true;
+      document.getElementById("heatmapShowBest").disabled = true;
+      document.getElementById("heatmapBestValue").innerText = "Only 2-qubit targets are supported.";
+      return;
+    }
+
+    const orderMode = document.getElementById("heatmapOrdering").value;
+    const baseAxis = makeBaseHeatmapAxis();
+    const layerMatrices = new Map();
+    for (const item of baseAxis) {
+      for (const layer of item.layers) {
+        if (!layerMatrices.has(layer.label)) {
+          layerMatrices.set(layer.label, buildLayerMatrix(layer));
+        }
+      }
+    }
+
+    const basePairMatrices = baseAxis.map(item => {
+      const first = layerMatrices.get(item.layers[0].label);
+      const second = layerMatrices.get(item.layers[1].label);
+      return multiplyFast4(second, first);
+    });
+    const axisOrder = orderHeatmapAxis(baseAxis, basePairMatrices, orderMode);
+    const axis = axisOrder.map(index => baseAxis[index]);
+    const pairMatrices = axisOrder.map(index => basePairMatrices[index]);
+
+    const size = axis.length;
+    canvas.width = size;
+    canvas.height = size;
+    const image = ctxHeatmap.createImageData(size, size);
+    const values = new Float64Array(size * size);
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+    let best = { x: 0, y: 0, value: Number.POSITIVE_INFINITY };
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const full = multiplyFast4(pairMatrices[x], pairMatrices[y]);
+        const value = heatmapFitness(full, target);
+        const vi = y * size + x;
+        values[vi] = value;
+        min = Math.min(min, value);
+        max = Math.max(max, value);
+        if (value < best.value) {
+          best = { x, y, value };
+        }
+      }
+    }
+
+    const bestTolerance = Math.max(1e-10, Math.abs(min) * 1e-9, (max - min) * 1e-9);
+    const bestCells = [];
+    for (let vi = 0; vi < values.length; vi++) {
+      const isBest = Math.abs(values[vi] - min) <= bestTolerance;
+      const [r, g, b] = isBest ? heatmapBestColor() : heatmapColor(values[vi], min, max);
+      const pi = vi * 4;
+      image.data[pi] = r;
+      image.data[pi + 1] = g;
+      image.data[pi + 2] = b;
+      image.data[pi + 3] = 255;
+      if (isBest) {
+        bestCells.push({ x: vi % size, y: Math.floor(vi / size), value: values[vi] });
+      }
+    }
+
+    heatmapState = {
+      built: true,
+      targetKey: getHeatmapTargetKey(),
+      axis,
+      values,
+      min,
+      max,
+      best,
+      bestCells,
+      zoom: null,
+      dragStart: null,
+      dragEnd: null,
+      panStart: null,
+      panOrigin: null,
+      dragMode: heatmapState.dragMode || "zoom",
+      isDragging: false,
+      isPanning: false,
+      selected: null,
+      imageData: image
+    };
+
+    renderHeatmapView();
+    document.getElementById("heatmapRange").innerText = `${min.toFixed(3)} - ${max.toFixed(3)}`;
+    document.getElementById("heatmapSelectedValue").innerText = "Move over a cell";
+    document.getElementById("heatmapLoadCircuit").disabled = true;
+    document.getElementById("heatmapShowBest").disabled = false;
+    updateHeatmapBestSummary();
+    renderHeatmapCircuitPreview(null);
+  }
+
+  function getHeatmapTargetKey() {
+    const fn = document.getElementById("FunctionName").value;
+    const ordering = document.getElementById("heatmapOrdering").value;
+    return `${fn}:${ordering}:${JSON.stringify(TargetArrat)}`;
+  }
+
+  function getHeatmapView() {
+    if (!heatmapState.built) return;
+    const size = heatmapState.axis.length;
+    return heatmapState.zoom || { x0: 0, y0: 0, x1: size - 1, y1: size - 1 };
+  }
+
+  function updateHeatmapZoomStatus() {
+    const status = document.getElementById("heatmapZoomStatus");
+    if (!heatmapState.built || !heatmapState.zoom) {
+      status.innerText = "Full view";
+      return;
+    }
+
+    const view = heatmapState.zoom;
+    status.innerText = `Zoom x:${view.x0}-${view.x1} y:${view.y0}-${view.y1}`;
+  }
+
+  function renderHeatmapView() {
+    if (!heatmapState.built) return;
+    const canvas = document.getElementById("heatmapCanvas");
+    const ctxHeatmap = canvas.getContext("2d");
+    const size = heatmapState.axis.length;
+    const view = getHeatmapView();
+    const width = view.x1 - view.x0 + 1;
+    const height = view.y1 - view.y0 + 1;
+
+    const sourceCanvas = document.createElement("canvas");
+    sourceCanvas.width = size;
+    sourceCanvas.height = size;
+    sourceCanvas.getContext("2d").putImageData(heatmapState.imageData, 0, 0);
+
+    ctxHeatmap.clearRect(0, 0, canvas.width, canvas.height);
+    ctxHeatmap.imageSmoothingEnabled = false;
+    ctxHeatmap.drawImage(sourceCanvas, view.x0, view.y0, width, height, 0, 0, canvas.width, canvas.height);
+
+    if (width <= 96 && height <= 96) {
+      ctxHeatmap.save();
+      ctxHeatmap.strokeStyle = "rgba(15, 23, 42, 0.22)";
+      ctxHeatmap.lineWidth = 1;
+      for (let x = 1; x < width; x++) {
+        const px = x * canvas.width / width;
+        ctxHeatmap.beginPath();
+        ctxHeatmap.moveTo(px, 0);
+        ctxHeatmap.lineTo(px, canvas.height);
+        ctxHeatmap.stroke();
+      }
+      for (let y = 1; y < height; y++) {
+        const py = y * canvas.height / height;
+        ctxHeatmap.beginPath();
+        ctxHeatmap.moveTo(0, py);
+        ctxHeatmap.lineTo(canvas.width, py);
+        ctxHeatmap.stroke();
+      }
+      ctxHeatmap.restore();
+    }
+
+    drawHeatmapOverlay(view);
+    updateHeatmapZoomStatus();
+  }
+
+  function drawHeatmapOverlay(view) {
+    const canvas = document.getElementById("heatmapCanvas");
+    const ctxHeatmap = canvas.getContext("2d");
+
+    const drawCellRect = (cell, strokeStyle, lineWidth) => {
+      if (!cell) return;
+      if (cell.x < view.x0 || cell.x > view.x1 || cell.y < view.y0 || cell.y > view.y1) return;
+      const width = view.x1 - view.x0 + 1;
+      const height = view.y1 - view.y0 + 1;
+      const cellW = canvas.width / width;
+      const cellH = canvas.height / height;
+      const x = (cell.x - view.x0) * cellW;
+      const y = (cell.y - view.y0) * cellH;
+      ctxHeatmap.save();
+      ctxHeatmap.strokeStyle = strokeStyle;
+      ctxHeatmap.lineWidth = lineWidth;
+      ctxHeatmap.strokeRect(x + lineWidth / 2, y + lineWidth / 2, Math.max(1, cellW - lineWidth), Math.max(1, cellH - lineWidth));
+      ctxHeatmap.restore();
+    };
+
+    drawCellRect(heatmapState.selected, "#0f172a", 2);
+
+    if (heatmapState.isDragging && heatmapState.dragStart && heatmapState.dragEnd) {
+      const x0 = Math.min(heatmapState.dragStart.x, heatmapState.dragEnd.x);
+      const x1 = Math.max(heatmapState.dragStart.x, heatmapState.dragEnd.x);
+      const y0 = Math.min(heatmapState.dragStart.y, heatmapState.dragEnd.y);
+      const y1 = Math.max(heatmapState.dragStart.y, heatmapState.dragEnd.y);
+      const width = view.x1 - view.x0 + 1;
+      const height = view.y1 - view.y0 + 1;
+      const cellW = canvas.width / width;
+      const cellH = canvas.height / height;
+      ctxHeatmap.save();
+      ctxHeatmap.fillStyle = "rgba(14, 165, 233, 0.15)";
+      ctxHeatmap.strokeStyle = "#0284c7";
+      ctxHeatmap.lineWidth = 2;
+      ctxHeatmap.setLineDash([5, 4]);
+      ctxHeatmap.fillRect((x0 - view.x0) * cellW, (y0 - view.y0) * cellH, (x1 - x0 + 1) * cellW, (y1 - y0 + 1) * cellH);
+      ctxHeatmap.strokeRect((x0 - view.x0) * cellW, (y0 - view.y0) * cellH, (x1 - x0 + 1) * cellW, (y1 - y0 + 1) * cellH);
+      ctxHeatmap.restore();
+    }
+  }
+
+  function updateHeatmapBestSummary() {
+    if (!heatmapState.best) return;
+    const bestCell = heatmapCellCircuit(heatmapState.best.x, heatmapState.best.y);
+    const layerText = bestCell.layers.map(layer => layer.short).join(" -> ");
+    const count = heatmapState.bestCells.length;
+    document.getElementById("heatmapBestValue").innerText =
+      `${heatmapState.best.value.toFixed(6)} | ${count} solution${count === 1 ? "" : "s"}`;
+    document.getElementById("heatmapBestValue").setAttribute("title", `First: (${heatmapState.best.x}, ${heatmapState.best.y}) ${layerText}`);
+  }
+
+  function redrawHeatmapSelection() {
+    if (!heatmapState.built) return;
+    renderHeatmapView();
+  }
+
+  function heatmapEventCell(evt) {
+    return heatmapPointerCell(evt, false);
+  }
+
+  function heatmapClampedEventCell(evt) {
+    return heatmapPointerCell(evt, true);
+  }
+
+  function heatmapPointerCell(evt, clampToEdge) {
+    if (!heatmapState.built) return null;
+    const canvas = document.getElementById("heatmapCanvas");
+    const rect = canvas.getBoundingClientRect();
+    const view = getHeatmapView();
+    let normX = (evt.clientX - rect.left) / rect.width;
+    let normY = (evt.clientY - rect.top) / rect.height;
+    if (clampToEdge) {
+      normX = Math.max(0, Math.min(0.999999, normX));
+      normY = Math.max(0, Math.min(0.999999, normY));
+    }
+    if (normX < 0 || normY < 0 || normX >= 1 || normY >= 1) return null;
+    const x = view.x0 + Math.floor(normX * (view.x1 - view.x0 + 1));
+    const y = view.y0 + Math.floor(normY * (view.y1 - view.y0 + 1));
+    if (x < view.x0 || y < view.y0 || x > view.x1 || y > view.y1) return null;
+    return { x, y };
+  }
+
+  function heatmapCellCircuit(x, y) {
+    const prefix = heatmapState.axis[y];
+    const suffix = heatmapState.axis[x];
+    const layers = [...prefix.layers, ...suffix.layers];
+    const circuit = [[], []];
+    for (const layer of layers) {
+      circuit[0].push(layer.circuit[0]);
+      circuit[1].push(layer.circuit[1]);
+    }
+    return { prefix, suffix, layers, circuit };
+  }
+
+  function showHeatmapCell(x, y) {
+    const cell = heatmapCellCircuit(x, y);
+    const value = heatmapState.values[y * heatmapState.axis.length + x];
+    heatmapState.selected = { x, y, ...cell, value };
+    document.getElementById("heatmapSelectedValue").innerText =
+      `(${x}, ${y}) HS distance: ${value.toFixed(6)}`;
+
+    const list = document.getElementById("heatmapLayerList");
+    list.innerHTML = "";
+    cell.layers.forEach((layer, index) => {
+      const item = document.createElement("div");
+      item.className = "heatmap-layer-pill";
+      item.innerHTML = `<span class="heatmap-layer-depth">D${index + 1}</span><span>${layer.label}</span>`;
+      list.appendChild(item);
+    });
+
+    document.getElementById("heatmapLoadCircuit").disabled = false;
+    renderHeatmapCircuitPreview(cell.circuit);
+    redrawHeatmapSelection();
+  }
+
+  function renderHeatmapCircuitPreview(circuit) {
+    const preview = document.getElementById("heatmapCircuitPreview");
+    const pctx = preview.getContext("2d");
+    pctx.clearRect(0, 0, preview.width, preview.height);
+    pctx.strokeStyle = "#cbd5e1";
+    pctx.lineWidth = 2;
+    const y0 = 40;
+    const y1 = 90;
+    pctx.beginPath();
+    pctx.moveTo(20, y0);
+    pctx.lineTo(260, y0);
+    pctx.moveTo(20, y1);
+    pctx.lineTo(260, y1);
+    pctx.stroke();
+
+    if (!circuit) return;
+    const labels = ["I", "H", "T", "Tdg", "X", "C"];
+    for (let d = 0; d < circuit[0].length; d++) {
+      const x = 55 + d * 52;
+      const top = circuit[0][d];
+      const bottom = circuit[1][d];
+      if ((top === 5 && bottom === 4) || (top === 4 && bottom === 5)) {
+        const cy = top === 5 ? y0 : y1;
+        const ty = top === 5 ? y1 : y0;
+        pctx.strokeStyle = "#334155";
+        pctx.beginPath();
+        pctx.moveTo(x, cy);
+        pctx.lineTo(x, ty);
+        pctx.stroke();
+        pctx.fillStyle = "#1d4ed8";
+        pctx.beginPath();
+        pctx.arc(x, cy, 5, 0, Math.PI * 2);
+        pctx.fill();
+        pctx.strokeStyle = "#334155";
+        pctx.beginPath();
+        pctx.arc(x, ty, 10, 0, Math.PI * 2);
+        pctx.moveTo(x - 10, ty);
+        pctx.lineTo(x + 10, ty);
+        pctx.moveTo(x, ty - 10);
+        pctx.lineTo(x, ty + 10);
+        pctx.stroke();
+        continue;
+      }
+
+      drawHeatmapOneQGate(pctx, x, y0, labels[top], top);
+      drawHeatmapOneQGate(pctx, x, y1, labels[bottom], bottom);
+    }
+  }
+
+  function drawHeatmapOneQGate(pctx, x, y, label, gateId) {
+    if (gateId === 0) return;
+    const colors = {
+      1: "#f87171",
+      2: "#818cf8",
+      3: "#22d3ee"
+    };
+    pctx.fillStyle = colors[gateId] || "#e2e8f0";
+    pctx.strokeStyle = "#475569";
+    pctx.lineWidth = 1;
+    pctx.fillRect(x - 17, y - 15, 34, 30);
+    pctx.strokeRect(x - 17, y - 15, 34, 30);
+    pctx.fillStyle = "#0f172a";
+    pctx.font = "12px JetBrains Mono, monospace";
+    pctx.textAlign = "center";
+    pctx.textBaseline = "middle";
+    pctx.fillText(label, x, y);
+  }
+
+  function loadHeatmapSelectionIntoEditor() {
+    if (!heatmapState.selected) return;
+    N = 2;
+    M = 4;
+    document.getElementById("circuitDepth").value = M;
+    const d0 = data0.find(item => item.gen === 1);
+    d0.circuit = JSON.parse(JSON.stringify(heatmapState.selected.circuit));
+    d0.fitness = heatmapState.selected.value;
+    renderCircuit(0);
+    updateFitness(d0);
+    activateTab("editor");
+  }
+
+  function showHeatmapBestCell() {
+    if (!heatmapState.best) return;
+    zoomHeatmapAroundCell(heatmapState.best, 14);
+    showHeatmapCell(heatmapState.best.x, heatmapState.best.y);
+  }
+
+  function zoomHeatmapAroundCell(cell, padding) {
+    if (!heatmapState.built || !cell) return;
+    const size = heatmapState.axis.length;
+    heatmapState.zoom = {
+      x0: Math.max(0, cell.x - padding),
+      y0: Math.max(0, cell.y - padding),
+      x1: Math.min(size - 1, cell.x + padding),
+      y1: Math.min(size - 1, cell.y + padding)
+    };
+    renderHeatmapView();
+  }
+
+  function resetHeatmapZoom() {
+    if (!heatmapState.built) return;
+    heatmapState.zoom = null;
+    heatmapState.dragStart = null;
+    heatmapState.dragEnd = null;
+    heatmapState.panStart = null;
+    heatmapState.panOrigin = null;
+    heatmapState.isDragging = false;
+    heatmapState.isPanning = false;
+    renderHeatmapView();
+  }
+
+  function applyHeatmapZoom(start, end) {
+    if (!heatmapState.built || !start || !end) return;
+    const x0 = Math.min(start.x, end.x);
+    const x1 = Math.max(start.x, end.x);
+    const y0 = Math.min(start.y, end.y);
+    const y1 = Math.max(start.y, end.y);
+    if (x1 - x0 < 2 && y1 - y0 < 2) return;
+
+    heatmapState.zoom = { x0, y0, x1, y1 };
+    heatmapState.dragStart = null;
+    heatmapState.dragEnd = null;
+    heatmapState.panStart = null;
+    heatmapState.panOrigin = null;
+    heatmapState.isDragging = false;
+    heatmapState.isPanning = false;
+    renderHeatmapView();
+  }
+
+  function panHeatmapZoom(evt) {
+    if (!heatmapState.built || !heatmapState.zoom || !heatmapState.panStart || !heatmapState.panOrigin) return;
+    const canvas = document.getElementById("heatmapCanvas");
+    const size = heatmapState.axis.length;
+    const origin = heatmapState.panOrigin;
+    const width = origin.x1 - origin.x0 + 1;
+    const height = origin.y1 - origin.y0 + 1;
+    const dxCells = Math.round((evt.clientX - heatmapState.panStart.x) * width / canvas.clientWidth);
+    const dyCells = Math.round((evt.clientY - heatmapState.panStart.y) * height / canvas.clientHeight);
+    const maxX0 = size - width;
+    const maxY0 = size - height;
+    const x0 = Math.max(0, Math.min(maxX0, origin.x0 - dxCells));
+    const y0 = Math.max(0, Math.min(maxY0, origin.y0 - dyCells));
+
+    heatmapState.zoom = {
+      x0,
+      y0,
+      x1: x0 + width - 1,
+      y1: y0 + height - 1
+    };
+    renderHeatmapView();
+  }
+
+  function setHeatmapDragMode(mode) {
+    heatmapState.dragMode = mode;
+    document.querySelectorAll(".heatmap-mode-button").forEach(button => {
+      button.classList.toggle("active", button.dataset.mode === mode);
+    });
+    const canvas = document.getElementById("heatmapCanvas");
+    canvas.style.cursor = mode === "pan" ? "grab" : "crosshair";
+  }
+
+  function downloadHeatmap() {
+    if (!heatmapState.built) return;
+    const canvas = document.getElementById("heatmapCanvas");
+    const link = document.createElement("a");
+    const targetName = document.getElementById("heatmapFunctionName").value || "target";
+    const orderName = document.getElementById("heatmapOrdering").value || "order";
+    const zoomName = heatmapState.zoom
+      ? `zoom_x${heatmapState.zoom.x0}-${heatmapState.zoom.x1}_y${heatmapState.zoom.y0}-${heatmapState.zoom.y1}`
+      : "full";
+    link.download = `heatmap_${targetName}_${orderName}_${zoomName}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
+
+  function syncHeatmapFunctionSelect() {
+    const source = document.getElementById("FunctionName");
+    const target = document.getElementById("heatmapFunctionName");
+    target.innerHTML = source.innerHTML;
+    target.value = source.value;
+  }
+
+  function activateTab(tab) {
+    document.querySelectorAll('.feature-button').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+
+    const isAnalyzer = tab === "analyzer";
+    const isEditor = tab === "editor";
+    const isFunction = tab === "function";
+    const isHeatmap = tab === "heatmap";
+
+    document.getElementById("target_function").style.display = isHeatmap ? "none" : "block";
+    document.getElementById("heatmap_view").style.display = isHeatmap ? "block" : "none";
+    document.getElementById("input_file").style.display = isAnalyzer ? "block" : "none";
+    document.getElementById("fitnessChartContainer").style.display = isAnalyzer ? "block" : "none";
+    document.getElementById("input_circuit_n").style.display = isEditor ? "block" : "none";
+    document.getElementById("circuit_diagram_section").style.display = isHeatmap ? "none" : "block";
+    document.getElementById("matrix_show").style.display = (!isAnalyzer && !isHeatmap) ? "block" : "none";
+    document.getElementById("HS_fitness").style.display = (!isFunction && !isHeatmap) ? "block" : "none";
+
+    if (isAnalyzer) {
+      setTimeout(() => {
+        updateFitnessChart();
+      }, 100);
+    }
+
+    if (isHeatmap) {
+      syncHeatmapFunctionSelect();
+      if (!heatmapState.built || heatmapState.targetKey !== getHeatmapTargetKey()) {
+        setTimeout(buildHeatmap, 30);
+      }
+    }
+  }
   
   document.querySelectorAll('.feature-button').forEach(btn => {
     btn.addEventListener('click', function () {
-      document.querySelectorAll('.feature-button').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-
-      const tab = this.dataset.tab;
-      document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
-      document.getElementById("fitnessChartContainer").style.display = (tab === "analyzer") ? "block" : "none";
-      document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
-      document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
-      document.getElementById("HS_fitness").style.display = (tab !== "function") ? "block" : "none";
-      
-      if (tab === "analyzer") {
-        setTimeout(() => {
-          updateFitnessChart();
-        }, 100);
-      }
+      activateTab(this.dataset.tab);
     });
+  });
+
+  document.getElementById("heatmapCanvas").addEventListener("mousedown", function(evt) {
+    const cell = heatmapEventCell(evt);
+    if (!cell) return;
+    if (heatmapState.zoom && heatmapState.dragMode === "pan") {
+      heatmapState.isPanning = true;
+      heatmapState.panStart = { x: evt.clientX, y: evt.clientY };
+      heatmapState.panOrigin = { ...heatmapState.zoom };
+      this.style.cursor = "grabbing";
+      evt.preventDefault();
+      return;
+    }
+    heatmapState.dragStart = cell;
+    heatmapState.dragEnd = cell;
+    heatmapState.isDragging = true;
+    evt.preventDefault();
+  });
+
+  document.getElementById("heatmapCanvas").addEventListener("mousemove", function(evt) {
+    const cell = heatmapEventCell(evt);
+    if (!cell) return;
+    if (heatmapState.isDragging) return;
+    showHeatmapCell(cell.x, cell.y);
+  });
+
+  window.addEventListener("mousemove", function(evt) {
+    if (heatmapState.isPanning) {
+      panHeatmapZoom(evt);
+      return;
+    }
+    if (!heatmapState.isDragging) return;
+    const cell = heatmapClampedEventCell(evt);
+    if (!cell) return;
+    heatmapState.dragEnd = cell;
+    renderHeatmapView();
+  });
+
+  window.addEventListener("mouseup", function(evt) {
+    if (heatmapState.isPanning) {
+      heatmapState.isPanning = false;
+      heatmapState.panStart = null;
+      heatmapState.panOrigin = null;
+      document.getElementById("heatmapCanvas").style.cursor = "crosshair";
+      const cell = heatmapEventCell(evt);
+      if (cell) showHeatmapCell(cell.x, cell.y);
+      return;
+    }
+    if (!heatmapState.isDragging) return;
+    const cell = heatmapClampedEventCell(evt);
+    const start = heatmapState.dragStart;
+    heatmapState.isDragging = false;
+    if (cell && start) {
+      heatmapState.dragEnd = cell;
+      applyHeatmapZoom(start, cell);
+      showHeatmapCell(cell.x, cell.y);
+      return;
+    }
+    heatmapState.dragStart = null;
+    heatmapState.dragEnd = null;
+    renderHeatmapView();
+  });
+
+  document.getElementById("heatmapCanvas").addEventListener("dblclick", function() {
+    resetHeatmapZoom();
+  });
+
+  document.getElementById("heatmapRebuild").addEventListener("click", buildHeatmap);
+  document.getElementById("heatmapLoadCircuit").addEventListener("click", loadHeatmapSelectionIntoEditor);
+  document.getElementById("heatmapShowBest").addEventListener("click", showHeatmapBestCell);
+  document.getElementById("heatmapResetZoom").addEventListener("click", resetHeatmapZoom);
+  document.getElementById("heatmapDownload").addEventListener("click", downloadHeatmap);
+  document.getElementById("heatmapOrdering").addEventListener("change", buildHeatmap);
+  document.getElementById("heatmapMetric").addEventListener("change", buildHeatmap);
+  document.querySelectorAll(".heatmap-mode-button").forEach(button => {
+    button.addEventListener("click", function() {
+      setHeatmapDragMode(this.dataset.mode);
+    });
+  });
+  document.getElementById("heatmapFunctionName").addEventListener("change", function() {
+    const source = document.getElementById("FunctionName");
+    source.value = this.value;
+    source.dispatchEvent(new Event("change"));
+    buildHeatmap();
   });
   
   canvas.addEventListener('dragover', (e) => {
@@ -3149,13 +4250,9 @@
   }
   
   window.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
-
-    document.getElementById("input_file").style.display = "none";
-    document.getElementById("fitnessChartContainer").style.display = "none";
-    document.getElementById("input_circuit_n").style.display = "none";
-    document.getElementById("matrix_show").style.display = "block";
-    document.getElementById("HS_fitness").style.display = "none";
+    syncHeatmapFunctionSelect();
+    setHeatmapDragMode(heatmapState.dragMode);
+    activateTab("function");
   });
 
 </script>
