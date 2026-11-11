@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+        <title>最佳動化</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta http-equiv="X-UA-Compatible"content="ie=edge">      <!--什麼版本IE 就用什麼版本的標準模式-->
+		<link rel="stylesheet" href="./assets/css/font-awesome.min.css">
+        <script src="./assets/js/jquery.min.js"></script><!--sidebar模式-->
+		<script src="./assets/js/bootstrap.min.js"></script><!--sidebar模式-->
+		<script src="./assets/js/fontawesome.js" crossorigin="anonymous"></script><!--拿back.to.top的ICON-->
+		<script src="./assets/js/fontsize.js"></script>
+		<link rel="stylesheet" href="./assets/css/main.css" />
+		<link rel="stylesheet" href="./assets/css/spotlight.css" /><!--照片文字的css-->
+		<link rel="stylesheet" href="./assets/css/slide.css" /><!--跑馬燈的css-->
+		<link rel="stylesheet" href="./assets/css/Button.css" /><!--返回頂端的css-->
+		<link rel="stylesheet" href="./assets/css/back_to_top.css" /><!--返回頂端的css--> 
+		<link rel="stylesheet" href="./assets/css/darkmode.css"/>
+		<link rel="stylesheet" href="./assets/css/Bootstrap.css" /><!--返回頂端的css-->
+	</head>
+	<div id="div_changesize">
+		<body class="is-preload">
+			<div id="wrapper">
+				<!--Sidebar-->
+				<nav class="navbar navbar-inverse">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							   <a class="navbar-brand" href="./">Evo-Panel</a>
+						  </div>
+						  <ul class="nav navbar-nav">
+							<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Numerical Optimization <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="./optimization-process.html">Evo-Panel (Demo)</a></li>
+								</ul>
+								<li class="dropdown"><a href="#">Featured Function</a></li>
+								<li class="dropdown"><a href="#">Feedback</a></li>
+								<li class="dropdown"><a href="./download_epin.html">Epin File</a></li>
+								<li class="dropdown"><a href="./setting.html">Setting</a></li>
+						</ul>
+					</div>
+				</nav>
+
+				<div id="main">
+					<div class="inner">
+						<!-- Banner -->
+<section id="banner">
+	<div class="content">
+		<header>
+			<h1><strong>Setting</strong></h1>
+			<!--<p>A free and fully responsive site template</p>-->
+		</header>
+		<div class="select">
+			<p>
+				Font size:
+			<select onchange="fzchange(this.options[this.selectedIndex].value);">
+			 <option value="25">Large</option>
+			 <option value="13">Medium</option>
+			 <option value="10">Small</option>
+			</p>
+			</select>
+		   </div>
+		</div>
+		</section>
+		<section id="banner">
+			<div class="content">
+				<div class="select">
+					<p>
+						Dark mode:
+					<select class="select__input" id="theme">
+					<option value="auto">Auto</option>
+					<option value="light">Light</option>
+					<option value="dark">Dark</option>
+				</p>
+					</select>
+				</div>
+		</section>
+				</section>
+		</div>
+		</div>
+</div>
+</div>
+</html>
+<a href="#" class="to-top">
+    <i class="fas fa-chevron-up"></i> <!--icon-->
+</a>
+
+<!-- Scripts -->
+<script src="./assets/js/breakpoints.min.js"></script>
+<script src="./assets/js/browser.min.js"></script>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/main.js"></script>
+<script src="./assets/js/util.js"></script>
+<script src="./assets/js/slide.js"></script>
+<script src="./assets/js/jquery-1.12.4.min.js"></script>
+<script src="./assets/js/multislider.js"></script> 
+<script src="./assets/js/darkmode.js"></script>
+<script src="./assets/js/back_to_top.js"></script>   <!--讀main.js檔-->
+<script>
+	function applyTheme(theme) {
+    document.body.classList.remove("theme-auto", "theme-light", "theme-dark");
+    document.body.classList.add(`theme-${theme}`);
+  }
+  
+  document.addEventListener("DOMContentLoaded", () => 
+  {
+    const savedTheme = localStorage.getItem("theme") || "auto";
+  
+    applyTheme(savedTheme);
+  
+    for (const optionElement of document.querySelectorAll("#theme option")) {
+      optionElement.selected = savedTheme === optionElement.value;
+    }
+  
+    document.querySelector("#theme").addEventListener("change", function () {
+      localStorage.setItem("theme", this.value);
+      applyTheme(this.value);
+    });
+  });
+</script>
+<script type="text/javascript">
+	function fzchange(x){
+    var chagefz=document.getElementById("div_changesize");
+    chagefz.style.fontSize=Number(x)+ "px" ;
+    }
+    function ffchange(y){
+    var chageff=document.getElementById("div_changesize");
+    chageff.style.fontFamily=y;
+    }
+</script>
+    </body>
+</html>

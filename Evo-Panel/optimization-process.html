@@ -1,0 +1,213 @@
+<!DOCTYPE >
+<html>
+<head>
+    <title>Evo-Panel</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta http-equiv="X-UA-Compatible"content="ie=edge">      
+	<script src="./assets/js/jquery.min.js"></script>
+	<script src="./assets/js/RecordRTC.min.js"></script>
+	<script src="./assets/js/fix-webm-duration.js"></script>
+	<script src="./assets/js/html2canvas.min.js"></script>
+	<script src="./assets/js/breakpoints.min.js"></script>
+	<script src="./assets/js/browser.min.js"></script>
+	<script src="./assets/js/main.js"></script>
+	<script src="./assets/js/util.js"></script>
+	<script src="./assets/js/slide.js"></script>
+	<script src="./assets/js/jquery-1.12.4.min.js"></script>
+	<script src="./assets/js/multislider.js"></script> 
+	<script src="./assets/js/darkmode.js"></script>
+	<script src="./assets/js/bootstrap.min.js"></script><!--sidebar-->
+	<script src="./assets/js/c0cbf39b93.js" ></script><!--ICON-->
+	<script src="./assets/js/fontsize.js"></script>	
+	<script src="./assets/js/echarts.js"></script>
+	<link rel="stylesheet" href="./assets/css/main.css" />
+	<link rel="stylesheet" href="./assets/css/spotlight.css" /><!--css-->
+	<link rel="stylesheet" href="./assets/css/slide.css" />
+	<link rel="stylesheet" href="./assets/css/Button.css" />
+	<link rel="stylesheet" href="./assets/css/darkmode.css"/>
+	<link rel="stylesheet" href="./assets/css/Bootstrap.css" />
+	<link rel="stylesheet" href="./assets/css/font-awesome.min.css" />
+    <style type="text/css">
+		canvas 
+		{
+			border: 2px solid #000000;
+			margin: auto;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+		}	
+
+	</style>
+</head>
+<body style="height: 100%; margin: 0" class="is-preload">
+	<div id="wrapper">
+		<!--Sidebar-->
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					   <a class="navbar-brand" href="./index.html">Evo-Panel</a>
+				  </div>
+				  <ul class="nav navbar-nav">
+					<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Numerical Optimization <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="./optimization-process.html">Evo-Panel Trial Version</a></li>
+						</ul>
+						<li class="dropdown"><a href="#">Featured Function</a></li>
+						<li class="dropdown"><a href="#">Feedback</a></li>
+						<li class="dropdown"><a href="./download_epin.html">Epin File</a></li>
+						<li class="dropdown"><a href="./setting.html">Setting</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<div id="main">
+			<div class="inner">
+		
+				<div class="row">
+					<div id="TBA" class="col-8" >
+						<canvas id="mycanvas" width="840" height="750" style="position:absolute;left:-672px;top:50px"></canvas>
+						<canvas id="fg" width="700" height="700" onmousewheel="Zoom_in();" style="position:absolute;left:-735px;top:60px;z-index: 1;"></canvas> 
+						<canvas id="fg2" width="700" height="700" onmousewheel="Zoom_in();" style="position:absolute;left:-735px;top:60px;z-index: 2;"></canvas>
+					</div>
+					<canvas id="background-canvas" style="position:absolute; top:-99999999px; left:-9999999999px;"></canvas>
+					<div class="col-4 col-4-medium" style="margin-top:50px;margin-left:-100px;">
+						<div class="table-wrapper">
+							<br><br>
+							<table>
+								<thead>
+									<tr>
+										<th style="width: 200px;">Fitness</th>
+										<th>Generation</th>
+										<th>Speed</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td id="fitness"></td>
+										<td id="gener"></td>
+										<td id="speed"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<ul class="actions">
+							<input type="file" id="file" onchange="upload()">
+							<!-- <li><a id="btnSave" class="button small icon solid fa-file-alt" type="file" onclick="upload()">讀檔</a></li> -->
+						</ul>	
+						<br>
+
+						<ul class="actions">
+							<button  class="button" onclick="screenshot()"><img src="./icon/camera.svg"  width="30" height="20" ><span style="font-size: 15px;">Picture</button>
+							<div id="start-recording">
+								<button id="btn-start-recording" class="btn-stop-recording"><img src="./icon/video.svg"  width="30" height="20" ><span style="font-size: 15px;">Record</button>
+							</div>
+							<div id="stop-recording">
+								<button id="btn-stop-recording" class="btn-stop-recording"><img src="./icon/video.svg"  width="30" height="20" ><span style="font-size: 15px;">Stop</button>
+							</div>
+							<button  class="button" onclick="compare_A()"class="fa-network-wired"><img src="./icon/network-wired-solid.svg"  width="30" height="20"><span style="font-size: 15px;">Compare</button>
+						</ul>
+
+						<ul class="actions">
+							<button  class="button " onclick="Eraser()"><img src="./icon/shoe-prints-solid.svg"  width="30" height="20" ><span style="font-size: 15px;">Footprint</button>
+							<button  class="button " onclick="stop()" ><img src="./icon/stop.svg"  width="30" height="20" ><span style="font-size: 15px;">Stop</button>
+							<button  id="pause" class="button " onclick="active_pause()"><img src="./icon/pause.svg"  width="30" height="20" ><span style="font-size: 15px;">Pause</button>
+							<button  id="play" class="button " onclick="active_pause()" ><img src="./icon/play.svg"  width="30" height="20" ><span style="font-size: 15px;">Play</button>
+						</ul>
+						<ul class="actions">
+							<button  class="button " onclick="slower()"><img src="./icon/backward-solid.svg"  width="30" height="20" ><span style="font-size: 15px;">Slow</button>
+							<button  class="button " onclick="faster()"><img src="./icon/forward-solid.svg"  width="30" height="20" ><span style="font-size: 15px;">Fast</button>
+							<button  class="button " onclick="Auto()"><img src="./icon/adjust-solid.svg"  width="30" height="20" ><span style="font-size: 15px;">Auto</button>
+						</ul>
+						<ul class="actions">
+							<button  class="button " onclick="last_generation()"><img src="./icon/angle-left.svg" width="30" height="20" ><span style="font-size: 15px;">Up</button>
+							<button  class="button " onclick="next_generation()"><img src="./icon/angle-right.svg" width="30" height="20"><span style="font-size: 15px;">Down</button>
+							<button  type="button" data-toggle="modal" data-target="#exampleModal"><img src="./icon/chart-line-solid.svg"  width="30" height="20"><span style="font-size: 15px;">Convergence diagram</button>
+						</ul>
+						<input id="generation" type="text" style="top:-5px; padding-left:10px; padding-right: 10px; margin-left: 5px; width: 95px; height: 50px; font-family: cwTeXYen; font-size: 15px;" placeholder="Generations"/>
+						<button style="position: relative; left:105px; top:-50px;" class="button " onclick="go_to()"><img src="./icon/fighter-jet-solid.svg"  width="30" height="20"><span style="font-size: 15px;">Go To</button>
+						
+
+						<!-- <ul class="actions">
+							<li><a class="button small icon solid fa-camera-retro" onclick="screenshot()">拍照</a></li>
+							<div id="start-recording">
+								<li><a id="btn-start-recording" class="button small icon solid fa-video btn-start-recording">錄影</a></li>
+							</div>
+							<div id="stop-recording">
+								<li><a id="btn-stop-recording" class="button small icon solid fa-video btn-stop-recording">停止</a></li>
+							</div>
+							<li><a class="button small icon solid fa-network-wired"  onclick="compare_A()">比較</a></li>
+						</ul>
+						<ul class="actions">
+							<li><a class="button small icon solid fa-shoe-prints" onclick="Eraser()">軌跡</a></li>
+							<li><a class="button small icon solid fa-stop" onclick="stop()">重頭</a></li>
+							<li id="pause"><a id="pause" class="button small icon solid fa-pause" onclick="active_pause()">暫停</a></li>
+							<li id="play"><a id="play" class="button small icon solid fa-play" onclick="active_pause()">播放</a></li>
+						</ul>
+						<ul class="actions">
+							<li><a class="button small icon solid fa-backward" onclick="slower()">變慢</a></li>
+							<li><a class="button small icon solid fa-forward" onclick="faster()">變快</a></li>
+							<li><a class="button small icon solid fa-adjust" onclick="Auto()">Auto</a></li>
+						</ul>	
+						<ul class="actions">
+							<li><a class="button small icon solid fa-chevron-left" onclick="last_generation()">上一代</a></li>
+							<li><a class="button small icon solid fa-chevron-right" onclick="next_generation()">下一代</a></li>
+						</ul>
+						<ul class="actions">
+							<input id="generation" type="text" style="position: relative;top: -5px; left: 20px;" placeholder="請輸入世代數" />
+							<li><a style="position: relative; left: 18px;" class="button small icon solid fa-fighter-jet" onclick="go_to()">Go To</a></li>
+						</ul>	 -->
+						<div class="slidecontainer">
+							<input type="range" min="1" max="100" value="1" class="slider" id="gen">
+							<p> <span id="demo"></span></p>
+						</div>
+						<ul class="slidecontainer">
+							<input type="range" min="1" max="100" value="50" class="slider" id="light">
+							<p>Lightness: <span id="light_demo"></span></p>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div id="modal" class="modal-dialog modal-sm" style="width: 70%;" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="echarts2" style="width: 1100px;height:500px;"></div>
+				</div>
+				<div class="modal-footer">
+					<a id="datazoom" class="button small icon solid fa-search-plus" onclick="datazoom()"><span style="font-size: 15px;">Zoom in</a>
+					<a id="undatazoom" class="button small icon solid fa-search-plus primary" onclick="datazoom()"><span style="font-size: 15px;">Zoom out</a>
+					<a class="button small icon solid fa-camera-retro" onclick="save_img2()"><span style="font-size: 15px;">Save</a>
+					<a class="button small icon solid fa-stop" data-dismiss="modal"><span style="font-size: 15px;">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	</div>
+	
+	<!-- Scripts -->
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/slide.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="assets/js/multislider.js"></script> 
+	<script src="assets/js/back_to_top.js"></script>
+	<script src="assets/js/evopanel.js"></script>
+
+
+</body>
+</html>

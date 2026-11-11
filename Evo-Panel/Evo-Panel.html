@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
+    <script src="./assets/js/jquery.min.js"></script><!--sidebar模式-->
+    <script src="./assets/js/bootstrap.min.js"></script><!--sidebar模式-->
+    <script src="./assets/js/fontawesome.js" crossorigin="anonymous"></script><!--拿back.to.top的ICON-->
+	<script src="./assets/js/fontsize.js"></script>
+    <link rel="stylesheet" href="./assets/css/main.css" />
+    <link rel="stylesheet" href="./assets/css/spotlight.css" /><!--照片文字的css-->
+	<link rel="stylesheet" href="./assets/css/slide.css" /><!--跑馬燈的css-->
+	<link rel="stylesheet" href="./assets/css/Button.css" /><!--返回頂端的css-->
+	<link rel="stylesheet" href="./assets/css/back_to_top.css" /><!--返回頂端的css-->
+	<link rel="stylesheet" href="./assets/css/darkmode.css" />
+	<link rel="stylesheet" href="./assets/css/Bootstrap.css" /><!--返回頂端的css-->
+    <title>Download File Example</title>
+</head>
+<body>
+    <div id="div_changesize">
+
+        <body class="is-preload">
+            <div id="wrapper">
+                <!--Sidebar-->
+                <nav class="navbar navbar-inverse">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="./index.html">Evo-Panel</a>
+                        </div>
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Numerical
+                                    Optimization <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="./optimization-process.html">Evo-Panel Trial Version</a></li>
+                                </ul>
+                            <li class="dropdown"><a href="#">Featured Function</a></li>
+                            <li class="dropdown"><a href="#">Feedback</a></li>
+                            <li class="dropdown"><a href="./download_epin.html">Epin File</a></li>
+                            <li class="dropdown"><a href="./setting.html">Setting</a></li>
+                        </ul>
+                    </div>
+                </nav>
+    
+                <div id="main">
+                    <div class="inner">
+                        <!-- Banner -->
+                        <section id="banner">
+                            <div class="content" style="text-align: center; margin-top: 50px;">
+                                <header>
+                                    <h1><strong>Evo-Panel</strong></h1>
+                                    <!--<p>A free and fully responsive site template</p>-->
+                                </header>
+                                <button onclick="downloadEvoPanel()">Download</button>
+                                <h2><strong>We will release our newest version as soon as our papers get published online</strong></h2>
+
+                                <div style="text-align: center;">
+                                    <img style="vertical-align: middle;" src="images/guide.png" alt="" width="1225" height="472" />
+                                </div>
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <script>
+        function downloadFile() {
+            let data = './PSO_ABS1000.epin';
+            let blob = new Blob([data], { type: 'text/plain' });
+            let url = window.URL.createObjectURL(blob);
+
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'PSO_ABS1000.epin';
+            a.click();
+        }
+    </script>
+    <script>
+        function downloadEvoPanel() {
+            const fileUrl = "./Evo-Panel.zip";
+            const fileName = "Evo-Panel.zip";
+            const link = document.createElement("a");
+            link.href = fileUrl;
+            link.download = fileName;
+            link.click();
+        }
+    </script>
+</body>
+</html>
